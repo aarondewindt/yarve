@@ -3,7 +3,7 @@
 #[cfg(test)]
 mod test_instruction_decoding_i {
     use crate::cpu::instruction::Instruction;
-    use crate::cpu::Register;
+    use crate::cpu::register::Register;
 
     // U format
     // 0b_00000000000000000000_00000_0000000
@@ -13,7 +13,7 @@ mod test_instruction_decoding_i {
         let raw_instruction: u32 = 0b_1_1101011011111010011_01110_0110111;
         let instruction = Instruction::decode(raw_instruction);
         assert_eq!(instruction, Instruction::LUI {
-            rd: Register::from(0b01110usize),
+            rd: Register::x14,
             imm: 0b11111111111111111111111111111111_1_1101011011111010011_000000000000,
         });
     }
@@ -23,7 +23,7 @@ mod test_instruction_decoding_i {
         let raw_instruction: u32 = 0b_0_1101011011111010011_01110_0110111;
         let instruction = Instruction::decode(raw_instruction);
         assert_eq!(instruction, Instruction::LUI {
-            rd: Register::from(0b01110usize),
+            rd: Register::x14,
             imm:  0b00000000000000000000000000000000_0_1101011011111010011_000000000000,
         });
     }
@@ -33,7 +33,7 @@ mod test_instruction_decoding_i {
         let raw_instruction: u32 = 0b_01101011011111010000_01110_0110111;
         let instruction = Instruction::decode(raw_instruction);
         assert_eq!(instruction, Instruction::LUI {
-            rd: Register::from(0b01110usize),
+            rd: Register::x14,
             imm: 0b01101011011111010000_000000000000,
         });
     }
@@ -43,7 +43,7 @@ mod test_instruction_decoding_i {
         let raw_instruction: u32 = 0b_01101011011111010000_01110_0010111;
         let instruction = Instruction::decode(raw_instruction);
         assert_eq!(instruction, Instruction::AUIPC {
-            rd: Register::from(0b01110usize),
+            rd: Register::x14,
             imm: 0b01101011011111010000_000000000000,
         });
     }
