@@ -24,9 +24,9 @@ pub enum Instruction {
     xori {rd: Register, rs1: Register, imm: u64},
     ori {rd: Register, rs1: Register, imm: u64},
     andi {rd: Register, rs1: Register, imm: u64},
-    _slli,
-    _srli,
-    _srai,
+    slli {rd: Register, rs1: Register, shamt: u64},
+    srli {rd: Register, rs1: Register, shamt: u64},
+    srai {rd: Register, rs1: Register, shamt: u64},
     slti {rd: Register, rs1: Register, imm: u64},
     sltiu {rd: Register, rs1: Register, imm: u64},
 
@@ -250,6 +250,24 @@ impl InstructionFormat {
                             0b100 => Instruction::xori{rd, rs1, imm},
                             0b110 => Instruction::ori{rd, rs1, imm},
                             0b111 => Instruction::andi{rd, rs1, imm},
+                            0b001 => Instruction::slli{rd, rs1, shamt: imm & 0b111111},
+                            // slli
+                            // srli
+                            // srai
+                            0b101 => {
+                                let shamt = imm & 0b111111;
+                                let func7 = imm >> 6;
+                                match func7 {
+                                    0x00 => Instruction::srli{rd, rs1, shamt},
+                                    0x10 => Instruction::srai{rd, rs1, shamt},
+                                    _ => Instruction::Undefined{
+                                        instruction,
+                                        msg: format!("format: I, opcode: {:07b}, func3: {:b}, \
+                                                  func7: {:b}", opcode, func3, func7)
+                                    }
+                                }
+                            },
+
                             _ => Instruction::Undefined{
                                 instruction,
                                 msg: format!("format: I, opcode: {:07b}, func3: {:b}", opcode, func3)

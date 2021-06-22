@@ -307,4 +307,38 @@ mod test_instruction_decoding_i {
         let instruction = Instruction::decode(raw_instruction);
         assert_eq!(instruction, Instruction::ebreak);
     }
+
+    #[test]
+    fn slli() {
+        let raw_instruction: u32 = 0b_000000_110111_11010_001_01110_0010011;
+        let instruction = Instruction::decode(raw_instruction);
+        assert_eq!(instruction, Instruction::slli {
+            rd: Register::x14,
+            rs1: Register::x26,
+            shamt: 0b110111,
+        });
+    }
+
+    #[test]
+    fn srli() {
+        let raw_instruction: u32 = 0b_000000_010111_11010_101_01110_0010011;
+        let instruction = Instruction::decode(raw_instruction);
+        assert_eq!(instruction, Instruction::srli {
+            rd: Register::x14,
+            rs1: Register::x26,
+            shamt: 0b010111,
+        });
+    }
+
+    #[test]
+    fn srai() {
+        let raw_instruction: u32 = 0b_010000_110111_11010_101_01110_0010011;
+        let instruction = Instruction::decode(raw_instruction);
+        assert_eq!(instruction, Instruction::srai {
+            rd: Register::x14,
+            rs1: Register::x26,
+            shamt: 0b110111,
+        });
+    }
+
 }
