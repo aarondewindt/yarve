@@ -39,6 +39,16 @@ mod test_instruction_decoding_i {
     }
 
     #[test]
+    fn lui2() {
+        let raw_instruction: u32 = 0b_00101011011111010000_01110_0110111;
+        let instruction = Instruction::decode(raw_instruction);
+        assert_eq!(instruction, Instruction::lui {
+            rd: Register::x14,
+            imm: 0b00101011011111010000_000000000000,
+        });
+    }
+
+    #[test]
     fn auipc() {
         let raw_instruction: u32 = 0b_01101011011111010000_01110_0010111;
         let instruction = Instruction::decode(raw_instruction);

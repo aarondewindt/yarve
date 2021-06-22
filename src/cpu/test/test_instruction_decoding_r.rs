@@ -1,7 +1,7 @@
 // Unittests to check the decoding of I formatted instructions.
 
 #[cfg(test)]
-mod test_instruction_decoding_i {
+mod test_instruction_decoding_r {
     use crate::cpu::instruction::Instruction;
     use crate::cpu::register::Register;
 

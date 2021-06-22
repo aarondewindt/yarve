@@ -38,19 +38,19 @@ pub enum Instruction {
     lhu {rd: Register, rs1: Register, imm: u64},
 
     // S: 0100011
-    _sb,
-    _sh,
-    _sw,
+    sb {rs1: Register, rs2: Register, imm: u64},
+    sh {rs1: Register, rs2: Register, imm: u64},
+    sw {rs1: Register, rs2: Register, imm: u64},
 
     // B: 1100011
-    _beq,
-    _bne,
-    _blt,
-    _bge,
-    _bltu,
-    _bgeu,
+    beq {rs1: Register, rs2: Register, imm: u64},
+    bne {rs1: Register, rs2: Register, imm: u64},
+    blt {rs1: Register, rs2: Register, imm: u64},
+    bge {rs1: Register, rs2: Register, imm: u64},
+    bltu {rs1: Register, rs2: Register, imm: u64},
+    bgeu {rs1: Register, rs2: Register, imm: u64},
 
-    _jal,  // J: 1101111
+    jal {rd: Register, imm: u64},  // J: 1101111
     jalr {rd: Register, rs1: Register, imm: u64},  // I: 1100111
 
     lui {rd: Register, imm: u64},  // U: 0110111
@@ -61,9 +61,9 @@ pub enum Instruction {
     ebreak,
 
     // ?: 0001111
-    _fence,
-    _fence_tso,
-    _pause,
+    fence {rd: Register, rs1: Register, succ: u64, pred: u64, fm: u64},
+    fence_tso,
+    pause,
 
     // RV64I Base Instruction Set
     lwu {rd: Register, rs1: Register, imm: u64},
@@ -222,8 +222,8 @@ impl Instruction {
 enum InstructionFormat {
     R,
     I,
-    _S,
-    _B,
+    S,
+    B,
     U,
     J
 }
@@ -238,7 +238,7 @@ impl InstructionFormat {
                 let uimm = ((instruction >> 15) & 0b11111) as u64;
                 let rs1 = Register::from(uimm as usize);
                 let imm =
-                    0xFFFFFFFFFFFFFC00u64 * (instruction as u64 >> 31)
+                    0xFFFFFFFFFFFFF000u64 * (instruction as u64 >> 31)
                     | (instruction as u64 >> 20);
 
                 match opcode {
@@ -251,9 +251,6 @@ impl InstructionFormat {
                             0b110 => Instruction::ori{rd, rs1, imm},
                             0b111 => Instruction::andi{rd, rs1, imm},
                             0b001 => Instruction::slli{rd, rs1, shamt: imm & 0b111111},
-                            // slli
-                            // srli
-                            // srai
                             0b101 => {
                                 let shamt = imm & 0b111111;
                                 let func7 = imm >> 6;
@@ -341,6 +338,19 @@ impl InstructionFormat {
                     0b0001111 => {
                         match func3 {
                             0b001 => Instruction::fence_i{rd, rs1, imm},
+                            0b000 => {
+                                let succ = imm & 0b1111;
+                                let pred = (imm >> 4) & 0b1111;
+                                let fm = (imm >> 8) & 0b1111;
+                                println!("{:b}", imm);
+                                println!("{:b}", fm);
+                                match (fm, pred, succ, rs1, rd) {
+                                    (0b1000, 0b0011, 0b0011, Register::x0, Register::x0) => Instruction::fence_tso,
+                                    (0b0000, 0b0001, 0b0000, Register::x0, Register::x0) => Instruction::pause,
+                                    (fm, pred, succ, rs1, rd) =>
+                                        Instruction::fence{rd, rs1, succ, pred, fm}
+                                }
+                            },
                             _ => Instruction::Undefined{
                                 instruction,
                                 msg: format!("format: I, opcode: {:07b}, func3: {:b}", opcode, func3)
@@ -434,14 +444,17 @@ impl InstructionFormat {
             },
 
             InstructionFormat::J => {
-                let _rd = Register::from((instruction >> 7) & 0b11111);
-                let _imm12 = (instruction >> 12) as u64;
-                let _imm11 = (instruction >> 12) as u64;
-                let _imm1 = (instruction >> 12) as u64;
-                let _imm20 = (instruction >> 12) as u64;
+                let rd = Register::from((instruction >> 7) & 0b11111);
+                let imm1912 = ((instruction >> 12) & 0b11111111) as u64;
+                let imm11 = ((instruction >> 20) & 0b1) as u64;
+                let imm101 = ((instruction >> 21) & 0b1111111111) as u64;
+                let imm20 = (instruction >> 31) as u64;
+
+                let imm = 0xFFFFFFFFFFF00000 * imm20 |
+                    (imm1912 << 12) | (imm11 << 11) | (imm101 << 1);
 
                 match opcode {
-                    1101111 => {Instruction::_jal},
+                    1101111 => {Instruction::jal{rd, imm}},
                     _ => Instruction::Undefined{
                         instruction,
                         msg: format!("format: J, opcode: {:07b}", opcode)
@@ -449,9 +462,67 @@ impl InstructionFormat {
                 }
             }
 
-            _ => Instruction::Undefined{
-                instruction,
-                msg: format!("Format not implemented")
+            InstructionFormat::S => {
+                let imm40 = ((instruction >> 7) & 0b11111) as u64;
+                let func3 = (instruction >> 12) & 0b111;
+                let rs1 = Register::from((instruction >> 15) & 0b11111);
+                let rs2 = Register::from((instruction >> 20) & 0b11111);
+                let imm115 = (instruction >> 25) as u64;
+                let imm = 0xFFFFFFFFFFFFF000 * (instruction as u64 >> 31)
+                    | (imm115 << 5) | imm40;
+
+                match opcode {
+                    0b0100011 => {
+                        match func3 {
+                            0b000 => Instruction::sb{rs1, rs2, imm},
+                            0b001 => Instruction::sh{rs1, rs2, imm},
+                            0b010 => Instruction::sw{rs1, rs2, imm},
+                            _ => Instruction::Undefined{
+                                instruction,
+                                msg: format!("format: S, opcode: {:07b}, func3: {:03b}", opcode, func3)
+                            }
+                        }
+                    }
+                    _ => Instruction::Undefined{
+                        instruction,
+                        msg: format!("format: S, opcode: {:07b}", opcode)
+                    }
+                }
+            }
+
+            InstructionFormat::B => {
+                let imm11 = ((instruction >> 7) & 0b1) as u64;
+                let imm41 = ((instruction >> 8) & 0b1111) as u64;
+                let func3 = (instruction >> 12) & 0b111;
+                let rs1 = Register::from((instruction >> 15) & 0b11111);
+                let rs2 = Register::from((instruction >> 20) & 0b11111);
+                let imm105 = ((instruction >> 25) & 0b111111) as u64;
+                let imm12 = (instruction >> 31) as u64;
+
+                let imm = 0xFFFFFFFFFFFFF000 * imm12 |
+                    (imm11 << 11) | (imm105 << 5) | (imm41 << 1);
+
+                match opcode {
+                    0b1100011 => {
+                        match func3 {
+                            0b000 => Instruction::beq{rs1, rs2, imm},
+                            0b001 => Instruction::bne{rs1, rs2, imm},
+                            0b100 => Instruction::blt{rs1, rs2, imm},
+                            0b101 => Instruction::bge{rs1, rs2, imm},
+                            0b110 => Instruction::bltu{rs1, rs2, imm},
+                            0b111 => Instruction::bgeu{rs1, rs2, imm},
+                            _ => Instruction::Undefined{
+                                instruction,
+                                msg: format!("format: B, opcode: {:07b}, func3: {:03b}", opcode, func3)
+                            }
+                        }
+                    },
+
+                    _ => Instruction::Undefined{
+                        instruction,
+                        msg: format!("format: B, opcode: {:07b}", opcode)
+                    }
+                }
             }
         }
     }
@@ -493,7 +564,7 @@ const INSTRUCTION_FORMAT_TABLE: [Option<InstructionFormat>; 128] = [
     /* 0b0100000 */ None,
     /* 0b0100001 */ None,
     /* 0b0100010 */ None,
-    /* 0b0100011 */ None,
+    /* 0b0100011 */ Some(InstructionFormat::S),
     /* 0b0100100 */ None,
     /* 0b0100101 */ None,
     /* 0b0100110 */ None,
@@ -557,7 +628,7 @@ const INSTRUCTION_FORMAT_TABLE: [Option<InstructionFormat>; 128] = [
     /* 0b1100000 */ None,
     /* 0b1100001 */ None,
     /* 0b1100010 */ None,
-    /* 0b1100011 */ None,
+    /* 0b1100011 */ Some(InstructionFormat::B),
     /* 0b1100100 */ None,
     /* 0b1100101 */ None,
     /* 0b1100110 */ None,

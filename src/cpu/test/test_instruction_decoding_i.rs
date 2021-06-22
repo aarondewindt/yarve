@@ -263,12 +263,12 @@ mod test_instruction_decoding_i {
 
     #[test]
     fn csrrci() {
-        let raw_instruction: u32 = 0b_011010110111_11010_111_01110_1110011;
+        let raw_instruction: u32 = 0b_001010110111_11010_111_01110_1110011;
         let instruction = Instruction::decode(raw_instruction);
         assert_eq!(instruction, Instruction::csrrci {
             rd: Register::x14,
             uimm: 0b11010,
-            imm: 0b011010110111,
+            imm: 0b001010110111,
         });
     }
 
@@ -339,6 +339,22 @@ mod test_instruction_decoding_i {
             rs1: Register::x26,
             shamt: 0b110111,
         });
+    }
+
+    #[test]
+    fn fence_tso() {
+        //                         0b_0100_0011_0111_00000_00001110_0010011
+        let raw_instruction: u32 = 0b_1000_0011_0011_00000_000_00000_0001111;
+        let instruction = Instruction::decode(raw_instruction);
+        assert_eq!(instruction, Instruction::fence_tso);
+    }
+
+    #[test]
+    fn pause() {
+        //                         0b_0100_0011_0111_00000_00001110_0010011
+        let raw_instruction: u32 = 0b_0000_0001_0000_00000_000_00000_0001111;
+        let instruction = Instruction::decode(raw_instruction);
+        assert_eq!(instruction, Instruction::pause);
     }
 
 }
