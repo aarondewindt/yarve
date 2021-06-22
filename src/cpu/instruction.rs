@@ -68,7 +68,7 @@ pub enum Instruction {
     // RV64I Base Instruction Set
     lwu {rd: Register, rs1: Register, imm: u64},
     ld {rd: Register, rs1: Register, imm: u64},
-    _sd,
+    sd {rs1: Register, rs2: Register, imm: u64},
     addiw {rd: Register, rs1: Register, imm: u64},
     _slliw,
     _srliw,
@@ -342,8 +342,6 @@ impl InstructionFormat {
                                 let succ = imm & 0b1111;
                                 let pred = (imm >> 4) & 0b1111;
                                 let fm = (imm >> 8) & 0b1111;
-                                println!("{:b}", imm);
-                                println!("{:b}", fm);
                                 match (fm, pred, succ, rs1, rd) {
                                     (0b1000, 0b0011, 0b0011, Register::x0, Register::x0) => Instruction::fence_tso,
                                     (0b0000, 0b0001, 0b0000, Register::x0, Register::x0) => Instruction::pause,
@@ -477,6 +475,7 @@ impl InstructionFormat {
                             0b000 => Instruction::sb{rs1, rs2, imm},
                             0b001 => Instruction::sh{rs1, rs2, imm},
                             0b010 => Instruction::sw{rs1, rs2, imm},
+                            0b011 => Instruction::sd{rs1, rs2, imm},
                             _ => Instruction::Undefined{
                                 instruction,
                                 msg: format!("format: S, opcode: {:07b}, func3: {:03b}", opcode, func3)
