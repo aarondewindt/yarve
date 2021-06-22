@@ -1,3 +1,3 @@
-mod cpu;
-mod error;
+pub mod cpu;
+pub mod error;
 

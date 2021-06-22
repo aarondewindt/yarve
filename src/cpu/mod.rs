@@ -1,4 +1,4 @@
 pub mod register;
-mod instruction;
+pub mod instruction;
 mod test;
-mod core;
+pub mod core;

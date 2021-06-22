@@ -7,186 +7,203 @@ pub enum Instruction {
     Undefined {instruction: u32, msg: String},
 
     // RV32I Base Instruction Set
-    LUI {rd: Register, imm: u64},
-    AUIPC {rd: Register, imm: u64},
-    _JAL,
-    JALR {rd: Register, rs1: Register, imm: u64},
-    _BEQ,
-    _BNE,
-    _BLT,
-    _BGE,
-    _BLTU,
-    _BGEU,
-    LB {rd: Register, rs1: Register, imm: u64},
-    LH {rd: Register, rs1: Register, imm: u64},
-    LW {rd: Register, rs1: Register, imm: u64},
-    LBU {rd: Register, rs1: Register, imm: u64},
-    LHU {rd: Register, rs1: Register, imm: u64},
-    _SB,
-    _SH,
-    _SW,
-    ADDI {rd: Register, rs1: Register, imm: u64},
-    SLTI {rd: Register, rs1: Register, imm: u64},
-    SLTIU {rd: Register, rs1: Register, imm: u64},
-    XORI {rd: Register, rs1: Register, imm: u64},
-    ORI {rd: Register, rs1: Register, imm: u64},
-    ANDI {rd: Register, rs1: Register, imm: u64},
-    _ADD,
-    _SUB,
-    _SLL,
-    _SLT,
-    _SLTU,
-    _XOR,
-    _SRL,
-    _SRA,
-    _OR,
-    _AND,
-    _FENCE,
-    _FENCE_TSO,
-    _PAUSE,
-    ECALL,
-    EBREAK,
+    // R: 0110011
+    add {rd: Register, rs1: Register, rs2: Register},
+    sub {rd: Register, rs1: Register, rs2: Register},
+    xor {rd: Register, rs1: Register, rs2: Register},
+    or {rd: Register, rs1: Register, rs2: Register},
+    and {rd: Register, rs1: Register, rs2: Register},
+    sll {rd: Register, rs1: Register, rs2: Register},
+    srl {rd: Register, rs1: Register, rs2: Register},
+    sra {rd: Register, rs1: Register, rs2: Register},
+    slt {rd: Register, rs1: Register, rs2: Register},
+    sltu {rd: Register, rs1: Register, rs2: Register},
+
+    // I: 0010011
+    addi {rd: Register, rs1: Register, imm: u64},
+    xori {rd: Register, rs1: Register, imm: u64},
+    ori {rd: Register, rs1: Register, imm: u64},
+    andi {rd: Register, rs1: Register, imm: u64},
+    _slli,
+    _srli,
+    _srai,
+    slti {rd: Register, rs1: Register, imm: u64},
+    sltiu {rd: Register, rs1: Register, imm: u64},
+
+    // I: 0000011
+    lb {rd: Register, rs1: Register, imm: u64},
+    lh {rd: Register, rs1: Register, imm: u64},
+    lw {rd: Register, rs1: Register, imm: u64},
+    lbu {rd: Register, rs1: Register, imm: u64},
+    lhu {rd: Register, rs1: Register, imm: u64},
+
+    // S: 0100011
+    _sb,
+    _sh,
+    _sw,
+
+    // B: 1100011
+    _beq,
+    _bne,
+    _blt,
+    _bge,
+    _bltu,
+    _bgeu,
+
+    _jal,  // J: 1101111
+    jalr {rd: Register, rs1: Register, imm: u64},  // I: 1100111
+
+    lui {rd: Register, imm: u64},  // U: 0110111
+    auipc {rd: Register, imm: u64},  // U: 0010111
+
+    // I: 1110011
+    ecall,
+    ebreak,
+
+    // ?: 0001111
+    _fence,
+    _fence_tso,
+    _pause,
 
     // RV64I Base Instruction Set
-    LWU {rd: Register, rs1: Register, imm: u64},
-    LD {rd: Register, rs1: Register, imm: u64},
-    _SD,
-    _SLLI,
-    _SRLI,
-    _SRAI,
-    ADDIW {rd: Register, rs1: Register, imm: u64},
-    _SLLIW,
-    _SRLIW,
-    _SRAIW,
-    _ADDW,
-    _SUBW,
-    _SLLW,
-    _SRLW,
-    _SRAW,
+    lwu {rd: Register, rs1: Register, imm: u64},
+    ld {rd: Register, rs1: Register, imm: u64},
+    _sd,
+    addiw {rd: Register, rs1: Register, imm: u64},
+    _slliw,
+    _srliw,
+    _sraiw,
+    _addw,
+    _subw,
+    _sllw,
+    _srlw,
+    _sraw,
 
     // RV32/RV64 Zifencei Standard Extension
-    FENCE_I {rd: Register, rs1: Register, imm: u64},
+    fence_i {rd: Register, rs1: Register, imm: u64},
 
     // RV32/RV64 Zicsr Standard Extension
-    CSRRW {rd: Register, rs1: Register, imm: u64},
-    CSRRS {rd: Register, rs1: Register, imm: u64},
-    CSRRC {rd: Register, rs1: Register, imm: u64},
-    CSRRWI {rd: Register, uimm: u64, imm: u64},
-    CSRRSI {rd: Register, uimm: u64, imm: u64},
-    CSRRCI {rd: Register, uimm: u64, imm: u64},
+    csrrw {rd: Register, rs1: Register, imm: u64},
+    csrrs {rd: Register, rs1: Register, imm: u64},
+    csrrc {rd: Register, rs1: Register, imm: u64},
+    csrrwi {rd: Register, uimm: u64, imm: u64},
+    csrrsi {rd: Register, uimm: u64, imm: u64},
+    csrrci {rd: Register, uimm: u64, imm: u64},
 
     // RV32M Standard Extension
-    _MUL,
-    _MULH,
-    _MULHSU,
-    _MULHU,
-    _DIV,
-    _DIVU,
-    _REM,
-    _REMU,
+    // R: 0110011
+    _mul,
+    _mulh,
+    _mulhsu,
+    _mulhu,
+    _div,
+    _divu,
+    _rem,
+    _remu,
 
     // RV64M Standard Extension
-    _MULW,
-    _DIVW,
-    _DIVUW,
-    _REMW,
-    _REMUW,
+    _mulw,
+    _divw,
+    _divuw,
+    _remw,
+    _remuw,
 
     // RV32A Standard Extension
-    _LR_W,
-    _SC_W,
-    _AMOSWAP_W,
-    _AMOADD_W,
-    _AMOXOR_W,
-    _AMOAND_W,
-    _AMOOR_W,
-    _AMOMIN_W,
-    _AMOMAX_W,
-    _AMOMINU_W,
-    _AMOMAXU_W,
+    // R: 0101111
+    _lr_w,
+    _sc_w,
+    _amoswap_w,
+    _amoadd_w,
+    _amoxor_w,
+    _amoand_w,
+    _amoor_w,
+    _amomin_w,
+    _amomax_w,
+    _amominu_w,
+    _amomaxu_w,
 
     // RV64A Standard Extension
-    _LR_D,
-    _SC_D,
-    _AMOSWAP_D,
-    _AMOADD_D,
-    _AMOXOR_D,
-    _AMOAND_D,
-    _AMOOR_D,
-    _AMOMIN_D,
-    _AMOMAX_D,
-    _AMOMINU_D,
-    _AMOMAXU_D,
+    _lr_d,
+    _sc_d,
+    _amoswap_d,
+    _amoadd_d,
+    _amoxor_d,
+    _amoand_d,
+    _amoor_d,
+    _amomin_d,
+    _amomax_d,
+    _amominu_d,
+    _amomaxu_d,
 
     // RV32F Standard Extension
-    FLW {rd: Register, rs1: Register, imm: u64},
-    _FSW,
-    _FMADD_S,
-    _FMSUB_S,
-    _FNMSUB_S,
-    _FNMADD_S,
-    _FADD_S,
-    _FSUB_S,
-    _FMUL_S,
-    _FDIV_S,
-    _FSQRT_S,
-    _FSGNJ_S,
-    _FSGNJN_S,
-    _FSGNJX_S,
-    _FMIN_S,
-    _FMAX_S,
-    _FCVT_W_S,
-    _FCVT_WU_S,
-    _FMV_X_W,
-    _FEQ_S,
-    _FLT_S,
-    _FLE_S,
-    _FCLASS_S,
-    _FCVT_S_W,
-    _FCVT_S_WU,
-    _FMV_W_X,
+    flw {rd: Register, rs1: Register, imm: u64},
+    _fsw,
+    _fmadd_s,
+    _fmsub_s,
+    _fnmsub_s,
+    _fnmadd_s,
+    _fadd_s,
+    _fsub_s,
+    _fmul_s,
+    _fdiv_s,
+    _fsqrt_s,
+    _fsgnj_s,
+    _fsgnjn_s,
+    _fsgnjx_s,
+    _fmin_s,
+    _fmax_s,
+    _fcvt_w_s,
+    _fcvt_wu_s,
+    _fmv_x_w,
+    _feq_s,
+    _flt_s,
+    _fle_s,
+    _fclass_s,
+    _fcvt_s_w,
+    _fcvt_s_wu,
+    _fmv_w_x,
 
     // RV64F Standard Extension
-    _FCV_TL_S,
-    _FCV_TLU_S,
-    _FCV_TS_L,
-    _FCV_TS_LU,
+    _fcv_tl_s,
+    _fcv_tlu_s,
+    _fcv_ts_l,
+    _fcv_ts_lu,
 
     // RV32D Standard Extension
-    FLD {rd: Register, rs1: Register, imm: u64},
-    _FSD,
-    _FMADD_D,
-    _FMSUB_D,
-    _FNMSUB_D,
-    _FNMADD_D,
-    _FADD_D,
-    _FSUB_D,
-    _FMUL_D,
-    _FDIV_D,
-    _FSQRT_D,
-    _FSGNJ_D,
-    _FSGNJN_D,
-    _FSGNJX_D,
-    _FMIN_D,
-    _FMAX_D,
-    _S_D,
-    _D_S,
-    _FEQ_D,
-    _FLT_D,
-    _FLE_D,
-    _FCLASS_D,
-    _FCVT_W_D,
-    _FCVT_WU_D,
-    _FCVT_D_W,
-    _FCVT_D_WU,
+    fld {rd: Register, rs1: Register, imm: u64},
+    _fsd,
+    _fmadd_d,
+    _fmsub_d,
+    _fnmsub_d,
+    _fnmadd_d,
+    _fadd_d,
+    _fsub_d,
+    _fmul_d,
+    _fdiv_d,
+    _fsqrt_d,
+    _fsgnj_d,
+    _fsgnjn_d,
+    _fsgnjx_d,
+    _fmin_d,
+    _fmax_d,
+    _s_d,
+    _d_s,
+    _feq_d,
+    _flt_d,
+    _fle_d,
+    _fclass_d,
+    _fcvt_w_d,
+    _fcvt_wu_d,
+    _fcvt_d_w,
+    _fcvt_d_wu,
 
     // RV64D Standard Extension
-    _FCVT_L_D,
-    _FCVT_LU_D,
-    _FMV_X_D,
-    _FCVT_D_L,
-    _FCVT_D_LU,
-    _FMV_D_X,
+    _fcvt_l_d,
+    _fcvt_lu_d,
+    _fmv_x_d,
+    _fcvt_d_l,
+    _fcvt_d_lu,
+    _fmv_d_x,
 
 }
 
@@ -208,7 +225,7 @@ enum InstructionFormat {
     _S,
     _B,
     U,
-    _J
+    J
 }
 
 impl InstructionFormat {
@@ -225,9 +242,14 @@ impl InstructionFormat {
                     | (instruction as u64 >> 20);
 
                 match opcode {
-                    0b1100111 => {
+                    0b0010011 => {
                         match func3 {
-                            0b000 => Instruction::JALR{rd, rs1, imm},
+                            0b000 => Instruction::addi{rd, rs1, imm},
+                            0b010 => Instruction::slti{rd, rs1, imm},
+                            0b011 => Instruction::sltiu{rd, rs1, imm},
+                            0b100 => Instruction::xori{rd, rs1, imm},
+                            0b110 => Instruction::ori{rd, rs1, imm},
+                            0b111 => Instruction::andi{rd, rs1, imm},
                             _ => Instruction::Undefined{
                                 instruction,
                                 msg: format!("format: I, opcode: {:07b}, func3: {:b}", opcode, func3)
@@ -237,13 +259,13 @@ impl InstructionFormat {
 
                     0b0000011 => {
                         match func3 {
-                            0b000 => Instruction::LB{rd, rs1, imm},
-                            0b001 => Instruction::LH{rd, rs1, imm},
-                            0b010 => Instruction::LW{rd, rs1, imm},
-                            0b100 => Instruction::LBU{rd, rs1, imm},
-                            0b101 => Instruction::LHU{rd, rs1, imm},
-                            0b110 => Instruction::LWU{rd, rs1, imm},
-                            0b011 => Instruction::LD{rd, rs1, imm},
+                            0b000 => Instruction::lb{rd, rs1, imm},
+                            0b001 => Instruction::lh{rd, rs1, imm},
+                            0b010 => Instruction::lw{rd, rs1, imm},
+                            0b100 => Instruction::lbu{rd, rs1, imm},
+                            0b101 => Instruction::lhu{rd, rs1, imm},
+                            0b110 => Instruction::lwu{rd, rs1, imm},
+                            0b011 => Instruction::ld{rd, rs1, imm},
                             _ => Instruction::Undefined{
                                 instruction,
                                 msg: format!("format: I, opcode: {:07b}, func3: {:b}", opcode, func3)
@@ -251,14 +273,9 @@ impl InstructionFormat {
                         }
                     },
 
-                    0b0010011 => {
+                    0b1100111 => {
                         match func3 {
-                            0b000 => Instruction::ADDI{rd, rs1, imm},
-                            0b010 => Instruction::SLTI{rd, rs1, imm},
-                            0b011 => Instruction::SLTIU{rd, rs1, imm},
-                            0b100 => Instruction::XORI{rd, rs1, imm},
-                            0b110 => Instruction::ORI{rd, rs1, imm},
-                            0b111 => Instruction::ANDI{rd, rs1, imm},
+                            0b000 => Instruction::jalr{rd, rs1, imm},
                             _ => Instruction::Undefined{
                                 instruction,
                                 msg: format!("format: I, opcode: {:07b}, func3: {:b}", opcode, func3)
@@ -270,8 +287,8 @@ impl InstructionFormat {
                         match func3 {
                             0b000 => {
                                 match imm {
-                                    0 => Instruction::ECALL,
-                                    1 => Instruction::EBREAK,
+                                    0 => Instruction::ecall,
+                                    1 => Instruction::ebreak,
                                     _ => Instruction::Undefined{
                                         instruction,
                                         msg: format!(
@@ -280,12 +297,12 @@ impl InstructionFormat {
                                     }
                                 }
                             },
-                            0b001 => Instruction::CSRRW{rd, rs1, imm},
-                            0b010 => Instruction::CSRRS{rd, rs1, imm},
-                            0b011 => Instruction::CSRRC{rd, rs1, imm},
-                            0b101 => Instruction::CSRRWI{rd, uimm, imm},
-                            0b110 => Instruction::CSRRSI{rd, uimm, imm},
-                            0b111 => Instruction::CSRRCI{rd, uimm, imm},
+                            0b001 => Instruction::csrrw{rd, rs1, imm},
+                            0b010 => Instruction::csrrs{rd, rs1, imm},
+                            0b011 => Instruction::csrrc{rd, rs1, imm},
+                            0b101 => Instruction::csrrwi{rd, uimm, imm},
+                            0b110 => Instruction::csrrsi{rd, uimm, imm},
+                            0b111 => Instruction::csrrci{rd, uimm, imm},
                             _ => Instruction::Undefined {
                                 instruction,
                                 msg: format!("format: I, opcode: {:07b}, func3: {:b}", opcode, func3)
@@ -295,7 +312,7 @@ impl InstructionFormat {
 
                     0b0011011 => {
                         match func3 {
-                            0b000 => Instruction::ADDIW{rd, rs1, imm},
+                            0b000 => Instruction::addiw{rd, rs1, imm},
                             _ => Instruction::Undefined{
                                 instruction,
                                 msg: format!("format: I, opcode: {:07b}, func3: {:b}", opcode, func3)
@@ -305,7 +322,7 @@ impl InstructionFormat {
 
                     0b0001111 => {
                         match func3 {
-                            0b001 => Instruction::FENCE_I{rd, rs1, imm},
+                            0b001 => Instruction::fence_i{rd, rs1, imm},
                             _ => Instruction::Undefined{
                                 instruction,
                                 msg: format!("format: I, opcode: {:07b}, func3: {:b}", opcode, func3)
@@ -315,8 +332,8 @@ impl InstructionFormat {
 
                     0b0000111 => {
                         match func3 {
-                            0b010 => Instruction::FLW{rd, rs1, imm},
-                            0b011 => Instruction::FLD{rd, rs1, imm},
+                            0b010 => Instruction::flw{rd, rs1, imm},
+                            0b011 => Instruction::fld{rd, rs1, imm},
                             _ => Instruction::Undefined{
                                 instruction,
                                 msg: format!("format: I, opcode: {:07b}, func3: {:b}", opcode, func3)
@@ -340,8 +357,8 @@ impl InstructionFormat {
                     (instruction & 0xFFFFF800u32) as u64;
 
                 match opcode {
-                    0b0110111 => Instruction::LUI{rd, imm},
-                    0b0010111 => Instruction::AUIPC{rd, imm},
+                    0b0110111 => Instruction::lui{rd, imm},
+                    0b0010111 => Instruction::auipc{rd, imm},
 
                     _ => Instruction::Undefined{
                         instruction,
@@ -353,43 +370,66 @@ impl InstructionFormat {
             InstructionFormat::R => {
                 let rd = Register::from((instruction >> 7) & 0b11111);
                 let func3 = (instruction >> 12) & 0b111;
-                let rs1 = Register::from(((instruction >> 15) & 0b11111));
-                let rs2 = Register::from(((instruction >> 20) & 0b11111));
+                let rs1 = Register::from((instruction >> 15) & 0b11111);
+                let rs2 = Register::from((instruction >> 20) & 0b11111);
                 let func7 = instruction >> 25;
 
                 match opcode {
                     0b0110011 => {
                         match func3 {
-                            0x0 => {Instruction::ADD{rd, func3, rs1, rs2, func7}},
-                            0x0 => {Instruction::SUB{rd, func3, rs1, rs2, func7}},
-                            0x4 => {Instruction::XOR{rd, func3, rs1, rs2, func7}},
-                            0x6 => {Instruction::OR{rd, func3, rs1, rs2, func7}},
-                            0x7 => {Instruction::AND{rd, func3, rs1, rs2, func7}},
-                            0x1 => {Instruction::SLL{rd, func3, rs1, rs2, func7}},
-                            0x5 => {Instruction::SRL{rd, func3, rs1, rs2, func7}},
-                            0x5 => {Instruction::SRA{rd, func3, rs1, rs2, func7}},
-                            0x2 => {Instruction::SLT{rd, func3, rs1, rs2, func7}},
-                            0x3 => {Instruction::SLTU{rd, func3, rs1, rs2, func7}},
+                            0x0 => match func7{
+                                0x00 => {Instruction::add{rd, rs1, rs2}},
+                                0x20 => {Instruction::sub{rd, rs1, rs2}},
+                                _ => {Instruction::Undefined{
+                                    instruction,
+                                    msg: format!("format: R, opcode: {:07b}, func3: \
+                                                  {:b}, func7: : {:b}", opcode, func3, func7)
+                                }}
+                            },
+                            0x4 => {Instruction::xor{rd, rs1, rs2}},
+                            0x6 => {Instruction::or{rd, rs1, rs2}},
+                            0x7 => {Instruction::and{rd, rs1, rs2}},
+                            0x1 => {Instruction::sll{rd, rs1, rs2}},
+                            0x5 => match func7{
+                                0x00 => {Instruction::srl{rd, rs1, rs2}},
+                                0x20 => {Instruction::sra{rd, rs1, rs2}},
+                                _ => {Instruction::Undefined{
+                                    instruction,
+                                    msg: format!("format: R, opcode: {:07b}, func3: \
+                                                  {:b}, func7: : {:b}", opcode, func3, func7)
+                                }}
+                            },
+                            0x2 => {Instruction::slt{rd, rs1, rs2}},
+                            0x3 => {Instruction::sltu{rd, rs1, rs2}},
+                            _ => Instruction::Undefined{
+                                instruction,
+                                msg: format!("format: R, opcode: {:07b}, func3: {:b}", opcode, func3)
+                            }
                         }
+                    },
+
+                    _ => Instruction::Undefined{
+                        instruction,
+                        msg: format!("format: R, opcode: {:07b}", opcode)
                     }
                 }
             },
 
             InstructionFormat::J => {
-                let rd = Register::from((instruction >> 7) & 0b11111);
-                let imm12 = (instruction >> 12) as u64;
-                let imm11 = (instruction >> 12) as u64;
-                let imm1 = (instruction >> 12) as u64;
-                let imm20 = (instruction >> 12) as u64;
+                let _rd = Register::from((instruction >> 7) & 0b11111);
+                let _imm12 = (instruction >> 12) as u64;
+                let _imm11 = (instruction >> 12) as u64;
+                let _imm1 = (instruction >> 12) as u64;
+                let _imm20 = (instruction >> 12) as u64;
 
                 match opcode {
+                    1101111 => {Instruction::_jal},
                     _ => Instruction::Undefined{
                         instruction,
                         msg: format!("format: J, opcode: {:07b}", opcode)
                     }
                 }
             }
-
 
             _ => Instruction::Undefined{
                 instruction,
@@ -451,7 +491,7 @@ const INSTRUCTION_FORMAT_TABLE: [Option<InstructionFormat>; 128] = [
     /* 0b0110000 */ None,
     /* 0b0110001 */ None,
     /* 0b0110010 */ None,
-    /* 0b0110011 */ None,
+    /* 0b0110011 */ Some(InstructionFormat::R),
     /* 0b0110100 */ None,
     /* 0b0110101 */ None,
     /* 0b0110110 */ None,
@@ -511,7 +551,7 @@ const INSTRUCTION_FORMAT_TABLE: [Option<InstructionFormat>; 128] = [
     /* 0b1101100 */ None,
     /* 0b1101101 */ None,
     /* 0b1101110 */ None,
-    /* 0b1101111 */ None,
+    /* 0b1101111 */ Some(InstructionFormat::J),
     /* 0b1110000 */ None,
     /* 0b1110001 */ None,
     /* 0b1110010 */ None,
