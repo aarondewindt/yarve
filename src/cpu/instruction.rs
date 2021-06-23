@@ -66,18 +66,27 @@ pub enum Instruction {
     pause,
 
     // RV64I Base Instruction Set
+    // I: 0000011
     lwu {rd: Register, rs1: Register, imm: u64},
     ld {rd: Register, rs1: Register, imm: u64},
+
+    // R: 0100011
     sd {rs1: Register, rs2: Register, imm: u64},
+
+    // I: 0011011
     addiw {rd: Register, rs1: Register, imm: u64},
-    _slliw,
-    _srliw,
-    _sraiw,
-    _addw,
-    _subw,
-    _sllw,
-    _srlw,
-    _sraw,
+
+    // R: 0011011
+    slliw {rd: Register, rs1: Register, shamt: u64},
+    srliw {rd: Register, rs1: Register, shamt: u64},
+    sraiw {rd: Register, rs1: Register, shamt: u64},
+
+    // R: 0111011
+    addw {rd: Register, rs1: Register, rs2: Register},
+    subw {rd: Register, rs1: Register, rs2: Register},
+    sllw {rd: Register, rs1: Register, rs2: Register},
+    srlw {rd: Register, rs1: Register, rs2: Register},
+    sraw {rd: Register, rs1: Register, rs2: Register},
 
     // RV32/RV64 Zifencei Standard Extension
     fence_i {rd: Register, rs1: Register, imm: u64},
@@ -253,14 +262,14 @@ impl InstructionFormat {
                             0b001 => Instruction::slli{rd, rs1, shamt: imm & 0b111111},
                             0b101 => {
                                 let shamt = imm & 0b111111;
-                                let func7 = imm >> 6;
-                                match func7 {
+                                let func6 = imm >> 6;
+                                match func6 {
                                     0x00 => Instruction::srli{rd, rs1, shamt},
                                     0x10 => Instruction::srai{rd, rs1, shamt},
                                     _ => Instruction::Undefined{
                                         instruction,
                                         msg: format!("format: I, opcode: {:07b}, func3: {:b}, \
-                                                  func7: {:b}", opcode, func3, func7)
+                                                  func6: {:b}", opcode, func3, func6)
                                     }
                                 }
                             },
@@ -328,6 +337,20 @@ impl InstructionFormat {
                     0b0011011 => {
                         match func3 {
                             0b000 => Instruction::addiw{rd, rs1, imm},
+                            0b001 => Instruction::slliw{rd, rs1, shamt: imm & 0b11111},
+                            0b101 => {
+                                let shamt = imm & 0b11111;
+                                let func7 = imm >> 5;
+                                match func7 {
+                                    0x00 => Instruction::srliw{rd, rs1, shamt},
+                                    0x20 => Instruction::sraiw{rd, rs1, shamt},
+                                    _ => Instruction::Undefined{
+                                        instruction,
+                                        msg: format!("format: I, opcode: {:07b}, func3: {:b}, \
+                                                  func7: {:b}", opcode, func3, func7)
+                                    }
+                                }
+                            },
                             _ => Instruction::Undefined{
                                 instruction,
                                 msg: format!("format: I, opcode: {:07b}, func3: {:b}", opcode, func3)
@@ -433,6 +456,33 @@ impl InstructionFormat {
                             }
                         }
                     },
+
+                    0b0111011 => match func3 {
+                        0b000 => match func7 {
+                            0b0000000 => Instruction::addw{rd, rs1, rs2},
+                            0b0100000 => Instruction::subw{rd, rs1, rs2},
+                            _ => {Instruction::Undefined{
+                                instruction,
+                                msg: format!("format: R, opcode: {:07b}, func3: \
+                                                  {:b}, func7: : {:b}", opcode, func3, func7)
+                            }}
+                        },
+                        0b001 => Instruction::sllw{rd, rs1, rs2},
+                        0b101 => match func7 {
+                            0b0000000 => Instruction::srlw{rd, rs1, rs2},
+                            0b0100000 => Instruction::sraw{rd, rs1, rs2},
+                            _ => {Instruction::Undefined{
+                                instruction,
+                                msg: format!("format: R, opcode: {:07b}, func3: \
+                                                  {:b}, func7: : {:b}", opcode, func3, func7)
+                            }}
+                        },
+
+                        _ => Instruction::Undefined{
+                            instruction,
+                            msg: format!("format: R, opcode: {:07b}, func3: {:b}", opcode, func3)
+                        }
+                    }
 
                     _ => Instruction::Undefined{
                         instruction,
@@ -587,7 +637,7 @@ const INSTRUCTION_FORMAT_TABLE: [Option<InstructionFormat>; 128] = [
     /* 0b0111000 */ None,
     /* 0b0111001 */ None,
     /* 0b0111010 */ None,
-    /* 0b0111011 */ None,
+    /* 0b0111011 */ Some(InstructionFormat::R),
     /* 0b0111100 */ None,
     /* 0b0111101 */ None,
     /* 0b0111110 */ None,

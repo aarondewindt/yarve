@@ -117,4 +117,96 @@ mod test_instruction_decoding_r {
             rs2: Register::x23,
         });
     }
+
+    #[test]
+    fn addw() {
+        let raw_instruction: u32 = 0b_0000000_10111_11010_000_01110_0111011;
+        let instruction = Instruction::decode(raw_instruction);
+        assert_eq!(instruction, Instruction::addw {
+            rd: Register::x14,
+            rs1: Register::x26,
+            rs2: Register::x23,
+        });
+    }
+
+    #[test]
+    fn subw() {
+        let raw_instruction: u32 = 0b_0100000_10111_11010_000_01110_0111011;
+        let instruction = Instruction::decode(raw_instruction);
+        assert_eq!(instruction, Instruction::subw {
+            rd: Register::x14,
+            rs1: Register::x26,
+            rs2: Register::x23,
+        });
+    }
+
+    #[test]
+    fn sllw() {
+        let raw_instruction: u32 = 0b_0000000_10111_11010_001_01110_0111011;
+        let instruction = Instruction::decode(raw_instruction);
+        assert_eq!(instruction, Instruction::sllw {
+            rd: Register::x14,
+            rs1: Register::x26,
+            rs2: Register::x23,
+        });
+    }
+
+    #[test]
+    fn srlw() {
+        let raw_instruction: u32 = 0b_0000000_10111_11010_101_01110_0111011;
+        let instruction = Instruction::decode(raw_instruction);
+        assert_eq!(instruction, Instruction::srlw {
+            rd: Register::x14,
+            rs1: Register::x26,
+            rs2: Register::x23,
+        });
+    }
+
+    #[test]
+    fn sraw() {
+        let raw_instruction: u32 = 0b_0100000_10111_11010_101_01110_0111011;
+        let instruction = Instruction::decode(raw_instruction);
+        assert_eq!(instruction, Instruction::sraw {
+            rd: Register::x14,
+            rs1: Register::x26,
+            rs2: Register::x23,
+        });
+    }
+
+    // 0b001 slliw 0011011
+    #[test]
+    fn slliw() {
+        let raw_instruction: u32 = 0b_0000000_10111_11010_001_01110_0011011;
+        let instruction = Instruction::decode(raw_instruction);
+        assert_eq!(instruction, Instruction::slliw {
+            rd: Register::x14,
+            rs1: Register::x26,
+            shamt: 0b10111,
+        });
+    }
+    // 0b101 srliw 0011011
+    #[test]
+    fn srliw() {
+        let raw_instruction: u32 = 0b_0000000_10111_11010_101_01110_0011011;
+        let instruction = Instruction::decode(raw_instruction);
+        assert_eq!(instruction, Instruction::srliw {
+            rd: Register::x14,
+            rs1: Register::x26,
+            shamt: 0b10111,
+        });
+    }
+
+    // 0b101 sraiw 0011011
+    #[test]
+    fn sraiw() {
+        let raw_instruction: u32 = 0b_0100000_10111_11010_101_01110_0011011;
+        let instruction = Instruction::decode(raw_instruction);
+        assert_eq!(instruction, Instruction::sraiw {
+            rd: Register::x14,
+            rs1: Register::x26,
+            shamt: 0b10111,
+        });
+    }
+
+
 }
