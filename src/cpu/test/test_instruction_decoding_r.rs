@@ -294,4 +294,65 @@ mod test_instruction_decoding_r {
         });
     }
 
+    // (000, 0000001) => Instruction::mulw{rd, rs1, rs2},
+    #[test]
+    fn mulw() {
+        let raw_instruction: u32 = 0b_0000001_10111_11010_000_01110_0111011;
+        let instruction = Instruction::decode(raw_instruction);
+        assert_eq!(instruction, Instruction::mulw {
+            rd: Register::x14,
+            rs1: Register::x26,
+            rs2: Register::x23,
+        });
+    }
+
+    // (100, 0000001) => Instruction::divw{rd, rs1, rs2},
+    #[test]
+    fn divw() {
+        let raw_instruction: u32 = 0b_0000001_10111_11010_100_01110_0111011;
+        let instruction = Instruction::decode(raw_instruction);
+        assert_eq!(instruction, Instruction::divw {
+            rd: Register::x14,
+            rs1: Register::x26,
+            rs2: Register::x23,
+        });
+    }
+
+    // (101, 0000001) => Instruction::divuw{rd, rs1, rs2},
+    #[test]
+    fn divuw() {
+        let raw_instruction: u32 = 0b_0000001_10111_11010_101_01110_0111011;
+        let instruction = Instruction::decode(raw_instruction);
+        assert_eq!(instruction, Instruction::divuw {
+            rd: Register::x14,
+            rs1: Register::x26,
+            rs2: Register::x23,
+        });
+    }
+
+    // (110, 0000001) => Instruction::remw{rd, rs1, rs2},
+    #[test]
+    fn remw() {
+        let raw_instruction: u32 = 0b_0000001_10111_11010_110_01110_0111011;
+        let instruction = Instruction::decode(raw_instruction);
+        assert_eq!(instruction, Instruction::remw {
+            rd: Register::x14,
+            rs1: Register::x26,
+            rs2: Register::x23,
+        });
+    }
+
+    // (111, 0000001) => Instruction::remuw{rd, rs1, rs2},
+    #[test]
+    fn remuw() {
+        let raw_instruction: u32 = 0b_0000001_10111_11010_111_01110_0111011;
+        let instruction = Instruction::decode(raw_instruction);
+        assert_eq!(instruction, Instruction::remuw {
+            rd: Register::x14,
+            rs1: Register::x26,
+            rs2: Register::x23,
+        });
+    }
+
+
 }
