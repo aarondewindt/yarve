@@ -294,7 +294,6 @@ mod test_instruction_decoding_r {
         });
     }
 
-    // (000, 0000001) => Instruction::mulw{rd, rs1, rs2},
     #[test]
     fn mulw() {
         let raw_instruction: u32 = 0b_0000001_10111_11010_000_01110_0111011;
@@ -306,7 +305,6 @@ mod test_instruction_decoding_r {
         });
     }
 
-    // (100, 0000001) => Instruction::divw{rd, rs1, rs2},
     #[test]
     fn divw() {
         let raw_instruction: u32 = 0b_0000001_10111_11010_100_01110_0111011;
@@ -318,7 +316,6 @@ mod test_instruction_decoding_r {
         });
     }
 
-    // (101, 0000001) => Instruction::divuw{rd, rs1, rs2},
     #[test]
     fn divuw() {
         let raw_instruction: u32 = 0b_0000001_10111_11010_101_01110_0111011;
@@ -330,7 +327,6 @@ mod test_instruction_decoding_r {
         });
     }
 
-    // (110, 0000001) => Instruction::remw{rd, rs1, rs2},
     #[test]
     fn remw() {
         let raw_instruction: u32 = 0b_0000001_10111_11010_110_01110_0111011;
@@ -342,7 +338,6 @@ mod test_instruction_decoding_r {
         });
     }
 
-    // (111, 0000001) => Instruction::remuw{rd, rs1, rs2},
     #[test]
     fn remuw() {
         let raw_instruction: u32 = 0b_0000001_10111_11010_111_01110_0111011;
@@ -351,6 +346,32 @@ mod test_instruction_decoding_r {
             rd: Register::x14,
             rs1: Register::x26,
             rs2: Register::x23,
+        });
+    }
+
+    #[test]
+    fn lr_w() {
+        let raw_instruction: u32 = 0b_00010_0_1_00000_11010_010_01110_0101111;
+        let instruction = Instruction::decode(raw_instruction);
+        assert_eq!(instruction, Instruction::lr_w {
+            rd: Register::x14,
+            rs1: Register::x26,
+            rl: true,
+            aq: false,
+        });
+    }
+
+    // (0b010, 0b00011) => Instruction::sc_w{rd, rs1, rs2, rl, aq},
+    #[test]
+    fn sc_w() {
+        let raw_instruction: u32 = 0b_00011_0_1_10111_11010_010_01110_0101111;
+        let instruction = Instruction::decode(raw_instruction);
+        assert_eq!(instruction, Instruction::sc_w {
+            rd: Register::x14,
+            rs1: Register::x26,
+            rs2: Register::x23,
+            rl: true,
+            aq: false,
         });
     }
 

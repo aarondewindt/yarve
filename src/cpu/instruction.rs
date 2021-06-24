@@ -119,30 +119,30 @@ pub enum Instruction {
 
     // RV32A Standard Extension
     // R: 0101111
-    _lr_w,
-    _sc_w,
-    _amoswap_w,
-    _amoadd_w,
-    _amoxor_w,
-    _amoand_w,
-    _amoor_w,
-    _amomin_w,
-    _amomax_w,
-    _amominu_w,
-    _amomaxu_w,
+    lr_w {rd: Register, rs1: Register, rl: bool, aq: bool},
+    sc_w {rd: Register, rs1: Register, rs2: Register, rl: bool, aq: bool},
+    amoswap_w {rd: Register, rs1: Register, rs2: Register, rl: bool, aq: bool},
+    amoadd_w {rd: Register, rs1: Register, rs2: Register, rl: bool, aq: bool},
+    amoxor_w {rd: Register, rs1: Register, rs2: Register, rl: bool, aq: bool},
+    amoand_w {rd: Register, rs1: Register, rs2: Register, rl: bool, aq: bool},
+    amoor_w {rd: Register, rs1: Register, rs2: Register, rl: bool, aq: bool},
+    amomin_w {rd: Register, rs1: Register, rs2: Register, rl: bool, aq: bool},
+    amomax_w {rd: Register, rs1: Register, rs2: Register, rl: bool, aq: bool},
+    amominu_w {rd: Register, rs1: Register, rs2: Register, rl: bool, aq: bool},
+    amomaxu_w {rd: Register, rs1: Register, rs2: Register, rl: bool, aq: bool},
 
     // RV64A Standard Extension
-    _lr_d,
-    _sc_d,
-    _amoswap_d,
-    _amoadd_d,
-    _amoxor_d,
-    _amoand_d,
-    _amoor_d,
-    _amomin_d,
-    _amomax_d,
-    _amominu_d,
-    _amomaxu_d,
+    lr_d,
+    sc_d,
+    amoswap_d,
+    amoadd_d,
+    amoxor_d,
+    amoand_d,
+    amoor_d,
+    amomin_d,
+    amomax_d,
+    amominu_d,
+    amomaxu_d,
 
     // RV32F Standard Extension
     flw {rd: Register, rs1: Register, imm: u64},
@@ -459,11 +459,11 @@ impl InstructionFormat {
                         (0b101, 0b0000000) => Instruction::srlw{rd, rs1, rs2},
                         (0b101, 0b0100000) => Instruction::sraw{rd, rs1, rs2},
 
-                        (000, 0000001) => Instruction::mulw{rd, rs1, rs2},
-                        (100, 0000001) => Instruction::divw{rd, rs1, rs2},
-                        (101, 0000001) => Instruction::divuw{rd, rs1, rs2},
-                        (110, 0000001) => Instruction::remw{rd, rs1, rs2},
-                        (111, 0000001) => Instruction::remuw{rd, rs1, rs2},
+                        (0b000, 0b0000001) => Instruction::mulw{rd, rs1, rs2},
+                        (0b100, 0b0000001) => Instruction::divw{rd, rs1, rs2},
+                        (0b101, 0b0000001) => Instruction::divuw{rd, rs1, rs2},
+                        (0b110, 0b0000001) => Instruction::remw{rd, rs1, rs2},
+                        (0b111, 0b0000001) => Instruction::remuw{rd, rs1, rs2},
 
                         _ => Instruction::Undefined{
                             instruction,
@@ -472,7 +472,31 @@ impl InstructionFormat {
                         }
                     }
 
+                    0b0101111 => {
+                        let rl = (func7 & 0b1) != 0;
+                        let aq = ((func7 >> 1) & 0b1) != 0;
+                        let func5 = func7 >> 2;
 
+                        match (func3, func5, rs2) {
+                            (0b010, 0b00010, Register::x0) => Instruction::lr_w{rd, rs1, rl, aq},
+                            (0b010, 0b00011, rs2) => Instruction::sc_w{rd, rs1, rs2, rl, aq},
+                            (0b010, 0b00001, rs2) => Instruction::amoswap_w{rd, rs1, rs2, rl, aq},
+                            (0b010, 0b00000, rs2) => Instruction::amoadd_w{rd, rs1, rs2, rl, aq},
+                            (0b010, 0b00100, rs2) => Instruction::amoxor_w{rd, rs1, rs2, rl, aq},
+                            (0b010, 0b01100, rs2) => Instruction::amoand_w{rd, rs1, rs2, rl, aq},
+                            (0b010, 0b01000, rs2) => Instruction::amoor_w{rd, rs1, rs2, rl, aq},
+                            (0b010, 0b10000, rs2) => Instruction::amomin_w{rd, rs1, rs2, rl, aq},
+                            (0b010, 0b10100, rs2) => Instruction::amomax_w{rd, rs1, rs2, rl, aq},
+                            (0b010, 0b11000, rs2) => Instruction::amominu_w{rd, rs1, rs2, rl, aq},
+                            (0b010, 0b11100, rs2) => Instruction::amomaxu_w{rd, rs1, rs2, rl, aq},
+
+                            _ => Instruction::Undefined{
+                                instruction,
+                                msg: format!("format: R, opcode: {:07b}, \
+                                          func3: {:b}, func7: {:b}", opcode, func3, func7)
+                            }
+                        }
+                    }
                     _ => Instruction::Undefined{
                         instruction,
                         msg: format!("format: R, opcode: {:07b}", opcode)
@@ -614,7 +638,7 @@ const INSTRUCTION_FORMAT_TABLE: [Option<InstructionFormat>; 128] = [
     /* 0b0101100 */ None,
     /* 0b0101101 */ None,
     /* 0b0101110 */ None,
-    /* 0b0101111 */ None,
+    /* 0b0101111 */ Some(InstructionFormat::R),
     /* 0b0110000 */ None,
     /* 0b0110001 */ None,
     /* 0b0110010 */ None,
