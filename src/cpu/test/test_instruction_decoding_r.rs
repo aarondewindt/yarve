@@ -361,7 +361,18 @@ mod test_instruction_decoding_r {
         });
     }
 
-    // (0b010, 0b00011) => Instruction::sc_w{rd, rs1, rs2, rl, aq},
+    #[test]
+    fn lr_d() {
+        let raw_instruction: u32 = 0b_00010_0_1_00000_11010_011_01110_0101111;
+        let instruction = Instruction::decode(raw_instruction);
+        assert_eq!(instruction, Instruction::lr_d {
+            rd: Register::x14,
+            rs1: Register::x26,
+            rl: true,
+            aq: false,
+        });
+    }
+
     #[test]
     fn sc_w() {
         let raw_instruction: u32 = 0b_00011_0_1_10111_11010_010_01110_0101111;
@@ -374,6 +385,255 @@ mod test_instruction_decoding_r {
             aq: false,
         });
     }
+
+    #[test]
+    fn amoswap_w() {
+        let raw_instruction: u32 = 0b_00001_0_1_10111_11010_010_01110_0101111;
+        let instruction = Instruction::decode(raw_instruction);
+        assert_eq!(instruction, Instruction::amoswap_w {
+            rd: Register::x14,
+            rs1: Register::x26,
+            rs2: Register::x23,
+            rl: true,
+            aq: false,
+        });
+    }
+
+    #[test]
+    fn amoadd_w() {
+        let raw_instruction: u32 = 0b_00000_0_1_10111_11010_010_01110_0101111;
+        let instruction = Instruction::decode(raw_instruction);
+        assert_eq!(instruction, Instruction::amoadd_w {
+            rd: Register::x14,
+            rs1: Register::x26,
+            rs2: Register::x23,
+            rl: true,
+            aq: false,
+        });
+    }
+
+    #[test]
+    fn amoxor_w() {
+        let raw_instruction: u32 = 0b_00100_0_1_10111_11010_010_01110_0101111;
+        let instruction = Instruction::decode(raw_instruction);
+        assert_eq!(instruction, Instruction::amoxor_w {
+            rd: Register::x14,
+            rs1: Register::x26,
+            rs2: Register::x23,
+            rl: true,
+            aq: false,
+        });
+    }
+
+    #[test]
+    fn amoand_w() {
+        let raw_instruction: u32 = 0b_01100_0_1_10111_11010_010_01110_0101111;
+        let instruction = Instruction::decode(raw_instruction);
+        assert_eq!(instruction, Instruction::amoand_w {
+            rd: Register::x14,
+            rs1: Register::x26,
+            rs2: Register::x23,
+            rl: true,
+            aq: false,
+        });
+    }
+
+    #[test]
+    fn amoor_w() {
+        let raw_instruction: u32 = 0b_01000_0_1_10111_11010_010_01110_0101111;
+        let instruction = Instruction::decode(raw_instruction);
+        assert_eq!(instruction, Instruction::amoor_w {
+            rd: Register::x14,
+            rs1: Register::x26,
+            rs2: Register::x23,
+            rl: true,
+            aq: false,
+        });
+    }
+
+    #[test]
+    fn amomin_w() {
+        let raw_instruction: u32 = 0b_10000_0_1_10111_11010_010_01110_0101111;
+        let instruction = Instruction::decode(raw_instruction);
+        assert_eq!(instruction, Instruction::amomin_w {
+            rd: Register::x14,
+            rs1: Register::x26,
+            rs2: Register::x23,
+            rl: true,
+            aq: false,
+        });
+    }
+
+    #[test]
+    fn amomax_w() {
+        let raw_instruction: u32 = 0b_10100_0_1_10111_11010_010_01110_0101111;
+        let instruction = Instruction::decode(raw_instruction);
+        assert_eq!(instruction, Instruction::amomax_w {
+            rd: Register::x14,
+            rs1: Register::x26,
+            rs2: Register::x23,
+            rl: true,
+            aq: false,
+        });
+    }
+
+    #[test]
+    fn amominu_w() {
+        let raw_instruction: u32 = 0b_11000_0_1_10111_11010_010_01110_0101111;
+        let instruction = Instruction::decode(raw_instruction);
+        assert_eq!(instruction, Instruction::amominu_w {
+            rd: Register::x14,
+            rs1: Register::x26,
+            rs2: Register::x23,
+            rl: true,
+            aq: false,
+        });
+    }
+
+    #[test]
+    fn amomaxu_w() {
+        let raw_instruction: u32 = 0b_11100_0_1_10111_11010_010_01110_0101111;
+        let instruction = Instruction::decode(raw_instruction);
+        assert_eq!(instruction, Instruction::amomaxu_w {
+            rd: Register::x14,
+            rs1: Register::x26,
+            rs2: Register::x23,
+            rl: true,
+            aq: false,
+        });
+    }
+
+    #[test]
+    fn sc_d() {
+        let raw_instruction: u32 = 0b_00011_0_1_10111_11010_011_01110_0101111;
+        let instruction = Instruction::decode(raw_instruction);
+        assert_eq!(instruction, Instruction::sc_d {
+            rd: Register::x14,
+            rs1: Register::x26,
+            rs2: Register::x23,
+            rl: true,
+            aq: false,
+        });
+    }
+
+    // (0b011, 0b00001, rs2) => Instruction::amoswap_d{rd, rs1, rs2, rl, aq},
+    #[test]
+    fn amoswap_d() {
+        let raw_instruction: u32 = 0b_00001_0_1_10111_11010_011_01110_0101111;
+        let instruction = Instruction::decode(raw_instruction);
+        assert_eq!(instruction, Instruction::amoswap_d {
+            rd: Register::x14,
+            rs1: Register::x26,
+            rs2: Register::x23,
+            rl: true,
+            aq: false,
+        });
+    }
+
+    #[test]
+    fn amoadd_d() {
+        let raw_instruction: u32 = 0b_00000_0_1_10111_11010_011_01110_0101111;
+        let instruction = Instruction::decode(raw_instruction);
+        assert_eq!(instruction, Instruction::amoadd_d {
+            rd: Register::x14,
+            rs1: Register::x26,
+            rs2: Register::x23,
+            rl: true,
+            aq: false,
+        });
+    }
+
+    #[test]
+    fn amoxor_d() {
+        let raw_instruction: u32 = 0b_00100_0_1_10111_11010_011_01110_0101111;
+        let instruction = Instruction::decode(raw_instruction);
+        assert_eq!(instruction, Instruction::amoxor_d {
+            rd: Register::x14,
+            rs1: Register::x26,
+            rs2: Register::x23,
+            rl: true,
+            aq: false,
+        });
+    }
+
+    #[test]
+    fn amoand_d() {
+        let raw_instruction: u32 = 0b_01100_0_1_10111_11010_011_01110_0101111;
+        let instruction = Instruction::decode(raw_instruction);
+        assert_eq!(instruction, Instruction::amoand_d {
+            rd: Register::x14,
+            rs1: Register::x26,
+            rs2: Register::x23,
+            rl: true,
+            aq: false,
+        });
+    }
+
+    #[test]
+    fn amoor_d() {
+        let raw_instruction: u32 = 0b_01000_0_1_10111_11010_011_01110_0101111;
+        let instruction = Instruction::decode(raw_instruction);
+        assert_eq!(instruction, Instruction::amoor_d {
+            rd: Register::x14,
+            rs1: Register::x26,
+            rs2: Register::x23,
+            rl: true,
+            aq: false,
+        });
+    }
+
+    #[test]
+    fn amomin_d() {
+        let raw_instruction: u32 = 0b_10000_0_1_10111_11010_011_01110_0101111;
+        let instruction = Instruction::decode(raw_instruction);
+        assert_eq!(instruction, Instruction::amomin_d {
+            rd: Register::x14,
+            rs1: Register::x26,
+            rs2: Register::x23,
+            rl: true,
+            aq: false,
+        });
+    }
+
+    #[test]
+    fn amomax_d() {
+        let raw_instruction: u32 = 0b_10100_0_1_10111_11010_011_01110_0101111;
+        let instruction = Instruction::decode(raw_instruction);
+        assert_eq!(instruction, Instruction::amomax_d {
+            rd: Register::x14,
+            rs1: Register::x26,
+            rs2: Register::x23,
+            rl: true,
+            aq: false,
+        });
+    }
+
+    #[test]
+    fn amominu_d() {
+        let raw_instruction: u32 = 0b_11000_0_1_10111_11010_011_01110_0101111;
+        let instruction = Instruction::decode(raw_instruction);
+        assert_eq!(instruction, Instruction::amominu_d {
+            rd: Register::x14,
+            rs1: Register::x26,
+            rs2: Register::x23,
+            rl: true,
+            aq: false,
+        });
+    }
+
+    #[test]
+    fn amomaxu_d() {
+        let raw_instruction: u32 = 0b_11100_0_1_10111_11010_011_01110_0101111;
+        let instruction = Instruction::decode(raw_instruction);
+        assert_eq!(instruction, Instruction::amomaxu_d {
+            rd: Register::x14,
+            rs1: Register::x26,
+            rs2: Register::x23,
+            rl: true,
+            aq: false,
+        });
+    }
+
 
 
 }

@@ -132,17 +132,17 @@ pub enum Instruction {
     amomaxu_w {rd: Register, rs1: Register, rs2: Register, rl: bool, aq: bool},
 
     // RV64A Standard Extension
-    lr_d,
-    sc_d,
-    amoswap_d,
-    amoadd_d,
-    amoxor_d,
-    amoand_d,
-    amoor_d,
-    amomin_d,
-    amomax_d,
-    amominu_d,
-    amomaxu_d,
+    lr_d {rd: Register, rs1: Register, rl: bool, aq: bool},
+    sc_d {rd: Register, rs1: Register, rs2: Register, rl: bool, aq: bool},
+    amoswap_d {rd: Register, rs1: Register, rs2: Register, rl: bool, aq: bool},
+    amoadd_d {rd: Register, rs1: Register, rs2: Register, rl: bool, aq: bool},
+    amoxor_d {rd: Register, rs1: Register, rs2: Register, rl: bool, aq: bool},
+    amoand_d {rd: Register, rs1: Register, rs2: Register, rl: bool, aq: bool},
+    amoor_d {rd: Register, rs1: Register, rs2: Register, rl: bool, aq: bool},
+    amomin_d {rd: Register, rs1: Register, rs2: Register, rl: bool, aq: bool},
+    amomax_d {rd: Register, rs1: Register, rs2: Register, rl: bool, aq: bool},
+    amominu_d {rd: Register, rs1: Register, rs2: Register, rl: bool, aq: bool},
+    amomaxu_d {rd: Register, rs1: Register, rs2: Register, rl: bool, aq: bool},
 
     // RV32F Standard Extension
     flw {rd: Register, rs1: Register, imm: u64},
@@ -489,6 +489,18 @@ impl InstructionFormat {
                             (0b010, 0b10100, rs2) => Instruction::amomax_w{rd, rs1, rs2, rl, aq},
                             (0b010, 0b11000, rs2) => Instruction::amominu_w{rd, rs1, rs2, rl, aq},
                             (0b010, 0b11100, rs2) => Instruction::amomaxu_w{rd, rs1, rs2, rl, aq},
+
+                            (0b011, 0b00010, Register::x0) => Instruction::lr_d{rd, rs1, rl, aq},
+                            (0b011, 0b00011, rs2) => Instruction::sc_d{rd, rs1, rs2, rl, aq},
+                            (0b011, 0b00001, rs2) => Instruction::amoswap_d{rd, rs1, rs2, rl, aq},
+                            (0b011, 0b00000, rs2) => Instruction::amoadd_d{rd, rs1, rs2, rl, aq},
+                            (0b011, 0b00100, rs2) => Instruction::amoxor_d{rd, rs1, rs2, rl, aq},
+                            (0b011, 0b01100, rs2) => Instruction::amoand_d{rd, rs1, rs2, rl, aq},
+                            (0b011, 0b01000, rs2) => Instruction::amoor_d{rd, rs1, rs2, rl, aq},
+                            (0b011, 0b10000, rs2) => Instruction::amomin_d{rd, rs1, rs2, rl, aq},
+                            (0b011, 0b10100, rs2) => Instruction::amomax_d{rd, rs1, rs2, rl, aq},
+                            (0b011, 0b11000, rs2) => Instruction::amominu_d{rd, rs1, rs2, rl, aq},
+                            (0b011, 0b11100, rs2) => Instruction::amomaxu_d{rd, rs1, rs2, rl, aq},
 
                             _ => Instruction::Undefined{
                                 instruction,
