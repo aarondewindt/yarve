@@ -1,7 +1,64 @@
 use crate::cpu::register::Register;
+use crate::cpu::register::FloatRegister;
+
+#[derive(Debug, PartialEq, Copy, Clone)]
+#[allow(non_camel_case_types)]
+pub enum RoundingMode {
+    Invalid {rm: u32},
+    rne, // Round to Nearest, ties to Even
+    rtz, // Round towards Zero
+    rdn, // Round Down (towards −∞)
+    rup, // Round Up (towards +∞)
+    rmm, // Round to Nearest, ties to Max Magnitude
+    r#dyn, // In instruction’s rm field, selects dynamic rounding mode;
+         // In Rounding Mode register, reserved.
+}
+
+impl From<u32> for RoundingMode {
+    fn from(value: u32) -> RoundingMode {
+        if let Some(rounding_mode) = ROUNDING_MODE_TABLE[value as usize] {
+            rounding_mode
+        } else {
+            RoundingMode::Invalid{rm: value}
+        }
+    }
+}
+
+const ROUNDING_MODE_TABLE: [Option<RoundingMode>; 8] = [
+    /* 0b000 */ Some(RoundingMode::rne),
+    /* 0b001 */ Some(RoundingMode::rtz),
+    /* 0b010 */ Some(RoundingMode::rdn),
+    /* 0b011 */ Some(RoundingMode::rup),
+    /* 0b100 */ Some(RoundingMode::rmm),
+    /* 0b101 */ None,
+    /* 0b110 */ None,
+    /* 0b111 */ Some(RoundingMode::r#dyn),
+];
 
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Copy, Clone)]
+#[allow(non_camel_case_types)]
+pub enum FloatFormat {
+    s,
+    d,
+    h,
+    q,
+}
+
+impl From<u32> for FloatFormat {
+    fn from(value: u32) -> FloatFormat {
+        FLOAT_FORMAT_TABLE[value as usize]
+    }
+}
+
+const FLOAT_FORMAT_TABLE: [FloatFormat; 4] = [
+    /* 0b00 */ FloatFormat::s,
+    /* 0b01 */ FloatFormat::d,
+    /* 0b10 */ FloatFormat::h,
+    /* 0b11 */ FloatFormat::q,
+];
+
+#[derive(Debug, PartialEq, Clone)]
 #[allow(non_camel_case_types)]
 pub enum Instruction {
     Undefined {instruction: u32, msg: String},
@@ -145,41 +202,55 @@ pub enum Instruction {
     amomaxu_d {rd: Register, rs1: Register, rs2: Register, rl: bool, aq: bool},
 
     // RV32F Standard Extension
-    flw {rd: Register, rs1: Register, imm: u64},
-    _fsw,
-    _fmadd_s,
-    _fmsub_s,
-    _fnmsub_s,
-    _fnmadd_s,
-    _fadd_s,
-    _fsub_s,
-    _fmul_s,
-    _fdiv_s,
-    _fsqrt_s,
-    _fsgnj_s,
-    _fsgnjn_s,
-    _fsgnjx_s,
-    _fmin_s,
-    _fmax_s,
-    _fcvt_w_s,
-    _fcvt_wu_s,
-    _fmv_x_w,
-    _feq_s,
-    _flt_s,
-    _fle_s,
-    _fclass_s,
-    _fcvt_s_w,
-    _fcvt_s_wu,
-    _fmv_w_x,
+    // I: 0000111
+    flw {rd: FloatRegister, rs1: FloatRegister, imm: u64},
+
+    // R: 0100111
+    fsw {imm: u64, rs1: FloatRegister, rs2: FloatRegister},
+
+    // R4: 1000011
+    fmadd_s {rd: FloatRegister, rm: RoundingMode, rs1: FloatRegister, rs2: FloatRegister, rs3: FloatRegister},
+
+    // R4: 1000111
+    fmsub_s {rd: FloatRegister, rm: RoundingMode, rs1: FloatRegister, rs2: FloatRegister, rs3: FloatRegister},
+
+    // R4: 1001011
+    fnmsub_s {rd: FloatRegister, rm: RoundingMode, rs1: FloatRegister, rs2: FloatRegister, rs3: FloatRegister},
+
+    // R4: 1001111
+    fnmadd_s {rd: FloatRegister, rm: RoundingMode, rs1: FloatRegister, rs2: FloatRegister, rs3: FloatRegister},
+
+    // R: 1010011
+    fadd_s {rd: FloatRegister, rm: RoundingMode, rs1: FloatRegister, rs2: FloatRegister},
+    fsub_s {rd: FloatRegister, rm: RoundingMode, rs1: FloatRegister, rs2: FloatRegister},
+    fmul_s {rd: FloatRegister, rm: RoundingMode, rs1: FloatRegister, rs2: FloatRegister},
+    fdiv_s {rd: FloatRegister, rm: RoundingMode, rs1: FloatRegister, rs2: FloatRegister},
+    fsqrt_s {rd: FloatRegister, rm: RoundingMode, rs1: FloatRegister},
+    fsgnj_s {rd: FloatRegister, rs1: FloatRegister, rs2: FloatRegister},
+    fsgnjn_s {rd: FloatRegister, rs1: FloatRegister, rs2: FloatRegister},
+    fsgnjx_s {rd: FloatRegister, rs1: FloatRegister, rs2: FloatRegister},
+    fmin_s {rd: FloatRegister, rs1: FloatRegister, rs2: FloatRegister},
+    fmax_s {rd: FloatRegister, rs1: FloatRegister, rs2: FloatRegister},
+    fcvt_w_s {rd: FloatRegister, rm: RoundingMode, rs1: FloatRegister},
+    fcvt_wu_s {rd: FloatRegister, rm: RoundingMode, rs1: FloatRegister},
+    fmv_x_w {rd: FloatRegister, rs1: FloatRegister},
+    feq_s {rd: FloatRegister, rs1: FloatRegister, rs2: FloatRegister},
+    flt_s {rd: FloatRegister, rs1: FloatRegister, rs2: FloatRegister},
+    fle_s {rd: FloatRegister, rs1: FloatRegister, rs2: FloatRegister},
+    fclass_s {rd: FloatRegister, rs1: FloatRegister},
+    fcvt_s_w {rd: FloatRegister, rm: RoundingMode, rs1: FloatRegister},
+    fcvt_s_wu {rd: FloatRegister, rm: RoundingMode, rs1: FloatRegister},
+    fmv_w_x {rd: FloatRegister, rs1: FloatRegister},
 
     // RV64F Standard Extension
-    _fcv_tl_s,
-    _fcv_tlu_s,
-    _fcv_ts_l,
-    _fcv_ts_lu,
+    // R: 1010011
+    fcv_tl_s {rd: FloatRegister, rm: RoundingMode, rs1: FloatRegister},
+    fcv_tlu_s {rd: FloatRegister, rm: RoundingMode, rs1: FloatRegister},
+    fcv_ts_l {rd: FloatRegister, rm: RoundingMode, rs1: FloatRegister},
+    fcv_ts_lu {rd: FloatRegister, rm: RoundingMode, rs1: FloatRegister},
 
     // RV32D Standard Extension
-    fld {rd: Register, rs1: Register, imm: u64},
+    fld {rd: FloatRegister, rs1: FloatRegister, imm: u64},
     _fsd,
     _fmadd_d,
     _fmsub_d,
@@ -381,8 +452,10 @@ impl InstructionFormat {
 
                     0b0000111 => {
                         match func3 {
-                            0b010 => Instruction::flw{rd, rs1, imm},
-                            0b011 => Instruction::fld{rd, rs1, imm},
+                            0b010 => Instruction::flw{rd: FloatRegister::from(rd),
+                                                      rs1: FloatRegister::from(rs1), imm},
+                            0b011 => Instruction::fld{rd: FloatRegister::from(rd),
+                                                      rs1: FloatRegister::from(rs1), imm},
                             _ => Instruction::Undefined{
                                 instruction,
                                 msg: format!("format: I, opcode: {:07b}, func3: {:b}", opcode, func3)
@@ -419,8 +492,10 @@ impl InstructionFormat {
             InstructionFormat::R => {
                 let rd = Register::from((instruction >> 7) & 0b11111);
                 let func3 = (instruction >> 12) & 0b111;
-                let rs1 = Register::from((instruction >> 15) & 0b11111);
-                let rs2 = Register::from((instruction >> 20) & 0b11111);
+                let irs1 = (instruction >> 15) & 0b11111;
+                let irs2 = (instruction >> 20) & 0b11111;
+                let rs1 = Register::from(irs1);
+                let rs2 = Register::from(irs2);
                 let func7 = instruction >> 25;
 
                 match opcode {
@@ -477,30 +552,30 @@ impl InstructionFormat {
                         let aq = ((func7 >> 1) & 0b1) != 0;
                         let func5 = func7 >> 2;
 
-                        match (func3, func5, rs2) {
-                            (0b010, 0b00010, Register::x0) => Instruction::lr_w{rd, rs1, rl, aq},
-                            (0b010, 0b00011, rs2) => Instruction::sc_w{rd, rs1, rs2, rl, aq},
-                            (0b010, 0b00001, rs2) => Instruction::amoswap_w{rd, rs1, rs2, rl, aq},
-                            (0b010, 0b00000, rs2) => Instruction::amoadd_w{rd, rs1, rs2, rl, aq},
-                            (0b010, 0b00100, rs2) => Instruction::amoxor_w{rd, rs1, rs2, rl, aq},
-                            (0b010, 0b01100, rs2) => Instruction::amoand_w{rd, rs1, rs2, rl, aq},
-                            (0b010, 0b01000, rs2) => Instruction::amoor_w{rd, rs1, rs2, rl, aq},
-                            (0b010, 0b10000, rs2) => Instruction::amomin_w{rd, rs1, rs2, rl, aq},
-                            (0b010, 0b10100, rs2) => Instruction::amomax_w{rd, rs1, rs2, rl, aq},
-                            (0b010, 0b11000, rs2) => Instruction::amominu_w{rd, rs1, rs2, rl, aq},
-                            (0b010, 0b11100, rs2) => Instruction::amomaxu_w{rd, rs1, rs2, rl, aq},
+                        match (func3, func5, irs2) {
+                            (0b010, 0b00010, 0x00) => Instruction::lr_w{rd, rs1, rl, aq},
+                            (0b010, 0b00011, _) => Instruction::sc_w{rd, rs1, rs2, rl, aq},
+                            (0b010, 0b00001, _) => Instruction::amoswap_w{rd, rs1, rs2, rl, aq},
+                            (0b010, 0b00000, _) => Instruction::amoadd_w{rd, rs1, rs2, rl, aq},
+                            (0b010, 0b00100, _) => Instruction::amoxor_w{rd, rs1, rs2, rl, aq},
+                            (0b010, 0b01100, _) => Instruction::amoand_w{rd, rs1, rs2, rl, aq},
+                            (0b010, 0b01000, _) => Instruction::amoor_w{rd, rs1, rs2, rl, aq},
+                            (0b010, 0b10000, _) => Instruction::amomin_w{rd, rs1, rs2, rl, aq},
+                            (0b010, 0b10100, _) => Instruction::amomax_w{rd, rs1, rs2, rl, aq},
+                            (0b010, 0b11000, _) => Instruction::amominu_w{rd, rs1, rs2, rl, aq},
+                            (0b010, 0b11100, _) => Instruction::amomaxu_w{rd, rs1, rs2, rl, aq},
 
-                            (0b011, 0b00010, Register::x0) => Instruction::lr_d{rd, rs1, rl, aq},
-                            (0b011, 0b00011, rs2) => Instruction::sc_d{rd, rs1, rs2, rl, aq},
-                            (0b011, 0b00001, rs2) => Instruction::amoswap_d{rd, rs1, rs2, rl, aq},
-                            (0b011, 0b00000, rs2) => Instruction::amoadd_d{rd, rs1, rs2, rl, aq},
-                            (0b011, 0b00100, rs2) => Instruction::amoxor_d{rd, rs1, rs2, rl, aq},
-                            (0b011, 0b01100, rs2) => Instruction::amoand_d{rd, rs1, rs2, rl, aq},
-                            (0b011, 0b01000, rs2) => Instruction::amoor_d{rd, rs1, rs2, rl, aq},
-                            (0b011, 0b10000, rs2) => Instruction::amomin_d{rd, rs1, rs2, rl, aq},
-                            (0b011, 0b10100, rs2) => Instruction::amomax_d{rd, rs1, rs2, rl, aq},
-                            (0b011, 0b11000, rs2) => Instruction::amominu_d{rd, rs1, rs2, rl, aq},
-                            (0b011, 0b11100, rs2) => Instruction::amomaxu_d{rd, rs1, rs2, rl, aq},
+                            (0b011, 0b00010, 0x00) => Instruction::lr_d{rd, rs1, rl, aq},
+                            (0b011, 0b00011, _) => Instruction::sc_d{rd, rs1, rs2, rl, aq},
+                            (0b011, 0b00001, _) => Instruction::amoswap_d{rd, rs1, rs2, rl, aq},
+                            (0b011, 0b00000, _) => Instruction::amoadd_d{rd, rs1, rs2, rl, aq},
+                            (0b011, 0b00100, _) => Instruction::amoxor_d{rd, rs1, rs2, rl, aq},
+                            (0b011, 0b01100, _) => Instruction::amoand_d{rd, rs1, rs2, rl, aq},
+                            (0b011, 0b01000, _) => Instruction::amoor_d{rd, rs1, rs2, rl, aq},
+                            (0b011, 0b10000, _) => Instruction::amomin_d{rd, rs1, rs2, rl, aq},
+                            (0b011, 0b10100, _) => Instruction::amomax_d{rd, rs1, rs2, rl, aq},
+                            (0b011, 0b11000, _) => Instruction::amominu_d{rd, rs1, rs2, rl, aq},
+                            (0b011, 0b11100, _) => Instruction::amomaxu_d{rd, rs1, rs2, rl, aq},
 
                             _ => Instruction::Undefined{
                                 instruction,
@@ -509,6 +584,61 @@ impl InstructionFormat {
                             }
                         }
                     }
+
+                    // Float instructions
+                    0b0100111 | 0b1000011 | 0b1000111 | 0b1001011 | 0b1001111 | 0b1010011 => {
+                        let rd = FloatRegister::from(rd);
+                        let rs1 = FloatRegister::from(rs1);
+                        let rs2 = FloatRegister::from(rs2);
+                        let rm = RoundingMode::from(func3);
+                        let fmt = FloatFormat::from(func7 & 0b11);
+                        let func5 = func7 >> 2;
+                        let rs3 = FloatRegister::from(func5);
+
+                        match (opcode, func3, irs2, fmt, func5) {
+                            (0100111, 0b010, _, _, _) => Instruction::fsw {
+                                imm: u64::from(rd) & ((func7 << 5) as u64), rs1, rs2
+                            },
+
+                            (0b1000011, _, _, FloatFormat::s, _) => Instruction::fmadd_s {rd, rm, rs1, rs2, rs3},
+                            (0b1000111, _, _, FloatFormat::s, _) => Instruction::fmsub_s {rd, rm, rs1, rs2, rs3},
+                            (0b1001011, _, _, FloatFormat::s, _) => Instruction::fnmsub_s {rd, rm, rs1, rs2, rs3},
+                            (0b1001111, _, _, FloatFormat::s, _) => Instruction::fnmadd_s {rd, rm, rs1, rs2, rs3},
+                            (0b1010011, _, _, FloatFormat::s, 0b00000) => Instruction::fadd_s {rd, rm, rs1, rs2},
+                            (0b1010011, _, _, FloatFormat::s, 0b00001) => Instruction::fsub_s {rd, rm, rs1, rs2},
+                            (0b1010011, _, _, FloatFormat::s, 0b00010) => Instruction::fmul_s {rd, rm, rs1, rs2},
+                            (0b1010011, _, _, FloatFormat::s, 0b00011) => Instruction::fdiv_s {rd, rm, rs1, rs2},
+                            (0b1010011, _, 0b00000, FloatFormat::s, 0b01011) => Instruction::fsqrt_s {rd, rm, rs1},
+                            (0b1010011, 0b000, _, FloatFormat::s, 0b00100) => Instruction::fsgnj_s {rd, rs1, rs2},
+                            (0b1010011, 0b001, _, FloatFormat::s, 0b00100) => Instruction::fsgnjn_s {rd, rs1, rs2},
+                            (0b1010011, 0b010, _, FloatFormat::s, 0b00100) => Instruction::fsgnjx_s {rd, rs1, rs2},
+                            (0b1010011, 0b000, _, FloatFormat::s, 0b00101) => Instruction::fmin_s {rd, rs1, rs2},
+                            (0b1010011, 0b001, _, FloatFormat::s, 0b00101) => Instruction::fmax_s {rd, rs1, rs2},
+                            (0b1010011, _, 0b00000, FloatFormat::s, 0b11000) => Instruction::fcvt_w_s {rd, rm, rs1},
+                            (0b1010011, _, 0b00001, FloatFormat::s, 0b11000) => Instruction::fcvt_wu_s {rd, rm, rs1},
+                            (0b1010011, 0b000, 0b00000, FloatFormat::s, 0b11100) => Instruction::fmv_x_w {rd, rs1},
+                            (0b1010011, 0b010, _, FloatFormat::s, 0b10100) => Instruction::feq_s {rd, rs1, rs2},
+                            (0b1010011, 0b001, _, FloatFormat::s, 0b10100) => Instruction::flt_s {rd, rs1, rs2},
+                            (0b1010011, 0b000, _, FloatFormat::s, 0b10100) => Instruction::fle_s {rd, rs1, rs2},
+                            (0b1010011, 0b001, 0b00000, FloatFormat::s, 0b11100) => Instruction::fclass_s {rd, rs1},
+                            (0b1010011, _, 0b00000, FloatFormat::s, 0b11010) => Instruction::fcvt_s_w {rd, rm, rs1},
+                            (0b1010011, _, 0b00001, FloatFormat::s, 0b11010) => Instruction::fcvt_s_wu {rd, rm, rs1},
+                            (0b1010011, 0b000, 0b00000, FloatFormat::s, 0b11110) => Instruction::fmv_w_x {rd, rs1},
+                            (0b1010011, _, 0b00010, FloatFormat::s, 0b11000) => Instruction::fcv_tl_s {rd, rm, rs1},
+                            (0b1010011, _, 0b00011, FloatFormat::s, 0b11000) => Instruction::fcv_tlu_s {rd, rm, rs1},
+                            (0b1010011, _, 0b00010, FloatFormat::s, 0b11010) => Instruction::fcv_ts_l {rd, rm, rs1},
+                            (0b1010011, _, 0b00011, FloatFormat::s, 0b11010) => Instruction::fcv_ts_lu {rd, rm, rs1},
+
+
+                            _ => Instruction::Undefined{
+                                instruction,
+                                msg: format!("format: R, float instr, opcode: {:07b}, \
+                                              func3: {:03b}, fmt: {:?}, func5: {:03b}",
+                                             opcode, func3, fmt, func5)
+                            }
+                        }
+                    }
+
                     _ => Instruction::Undefined{
                         instruction,
                         msg: format!("format: R, opcode: {:07b}", opcode)
@@ -642,7 +772,7 @@ const INSTRUCTION_FORMAT_TABLE: [Option<InstructionFormat>; 128] = [
     /* 0b0100100 */ None,
     /* 0b0100101 */ None,
     /* 0b0100110 */ None,
-    /* 0b0100111 */ None,
+    /* 0b0100111 */ Some(InstructionFormat::R),
     /* 0b0101000 */ None,
     /* 0b0101001 */ None,
     /* 0b0101010 */ None,
@@ -670,23 +800,23 @@ const INSTRUCTION_FORMAT_TABLE: [Option<InstructionFormat>; 128] = [
     /* 0b1000000 */ None,
     /* 0b1000001 */ None,
     /* 0b1000010 */ None,
-    /* 0b1000011 */ None,
+    /* 0b1000011 */ Some(InstructionFormat::R),
     /* 0b1000100 */ None,
     /* 0b1000101 */ None,
     /* 0b1000110 */ None,
-    /* 0b1000111 */ None,
+    /* 0b1000111 */ Some(InstructionFormat::R),
     /* 0b1001000 */ None,
     /* 0b1001001 */ None,
     /* 0b1001010 */ None,
-    /* 0b1001011 */ None,
+    /* 0b1001011 */ Some(InstructionFormat::R),
     /* 0b1001100 */ None,
     /* 0b1001101 */ None,
     /* 0b1001110 */ None,
-    /* 0b1001111 */ None,
+    /* 0b1001111 */ Some(InstructionFormat::R),
     /* 0b1010000 */ None,
     /* 0b1010001 */ None,
     /* 0b1010010 */ None,
-    /* 0b1010011 */ None,
+    /* 0b1010011 */ Some(InstructionFormat::R),
     /* 0b1010100 */ None,
     /* 0b1010101 */ None,
     /* 0b1010110 */ None,

@@ -7,7 +7,7 @@ mod test_instruction_decoding_b {
 
     // I format
     // 0b_0_000000_00000_00000_000_0000_0_0000000
-
+    #[test]
     fn imm_sign_extension_1() {
         let raw_instruction: u32 = 0b_1_110101_10111_11010_000_0111_0_1100011;
         let instruction = Instruction::decode(raw_instruction);

@@ -19,8 +19,7 @@
 // f18–27   fs2–11  FP saved registers Callee
 // f28–31   ft8–11  FP temporaries Caller
 
-
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Copy, Clone)]
 #[allow(non_camel_case_types)]
 pub enum Register {
     x0,
@@ -180,7 +179,7 @@ impl Register {
 }
 
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Debug, PartialEq, Copy, Clone)]
 #[allow(non_camel_case_types)]
 pub enum FloatRegister {
     f0,
@@ -216,6 +215,7 @@ pub enum FloatRegister {
     f30,
     f31
 }
+
 
 #[allow(non_upper_case_globals)]
 impl FloatRegister {
@@ -293,6 +293,18 @@ impl From<usize> for FloatRegister {
     }
 }
 
+impl From<FloatRegister> for u64 {
+    fn from(register: FloatRegister) -> u64 {
+        usize::from(register) as u64
+    }
+}
+
+impl From<u32> for FloatRegister {
+    fn from(value: u32) -> FloatRegister {
+        FloatRegister::from(value as usize)
+    }
+}
+
 impl From<FloatRegister> for usize {
     fn from(register: FloatRegister) -> usize {
         match register {
@@ -328,6 +340,45 @@ impl From<FloatRegister> for usize {
             FloatRegister::f29 => 29,
             FloatRegister::f30 => 30,
             FloatRegister::f31 => 31,
+        }
+    }
+}
+
+impl From<Register> for FloatRegister {
+    fn from(register: Register) -> FloatRegister {
+        match register {
+            Register::x0 => FloatRegister::f0,
+            Register::x1 => FloatRegister::f1,
+            Register::x2 => FloatRegister::f2,
+            Register::x3 => FloatRegister::f3,
+            Register::x4 => FloatRegister::f4,
+            Register::x5 => FloatRegister::f5,
+            Register::x6 => FloatRegister::f6,
+            Register::x7 => FloatRegister::f7,
+            Register::x8 => FloatRegister::f8,
+            Register::x9 => FloatRegister::f9,
+            Register::x10 => FloatRegister::f10,
+            Register::x11 => FloatRegister::f11,
+            Register::x12 => FloatRegister::f12,
+            Register::x13 => FloatRegister::f13,
+            Register::x14 => FloatRegister::f14,
+            Register::x15 => FloatRegister::f15,
+            Register::x16 => FloatRegister::f16,
+            Register::x17 => FloatRegister::f17,
+            Register::x18 => FloatRegister::f18,
+            Register::x19 => FloatRegister::f19,
+            Register::x20 => FloatRegister::f20,
+            Register::x21 => FloatRegister::f21,
+            Register::x22 => FloatRegister::f22,
+            Register::x23 => FloatRegister::f23,
+            Register::x24 => FloatRegister::f24,
+            Register::x25 => FloatRegister::f25,
+            Register::x26 => FloatRegister::f26,
+            Register::x27 => FloatRegister::f27,
+            Register::x28 => FloatRegister::f28,
+            Register::x29 => FloatRegister::f29,
+            Register::x30 => FloatRegister::f30,
+            Register::x31 => FloatRegister::f31,
         }
     }
 }

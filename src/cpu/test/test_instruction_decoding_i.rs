@@ -3,7 +3,7 @@
 #[cfg(test)]
 mod test_instruction_decoding_i {
     use crate::cpu::instruction::Instruction;
-    use crate::cpu::register::Register;
+    use crate::cpu::register::{Register, FloatRegister};
 
     // I format
     // 0b_000000000000_00000_000_00000_0000000
@@ -277,8 +277,8 @@ mod test_instruction_decoding_i {
         let raw_instruction: u32 = 0b_011010110111_11010_010_01110_0000111;
         let instruction = Instruction::decode(raw_instruction);
         assert_eq!(instruction, Instruction::flw {
-            rd: Register::x14,
-            rs1: Register::x26,
+            rd: FloatRegister::f14,
+            rs1: FloatRegister::f26,
             imm: 0b011010110111,
         });
     }
@@ -288,8 +288,8 @@ mod test_instruction_decoding_i {
         let raw_instruction: u32 = 0b_011010110111_11010_011_01110_0000111;
         let instruction = Instruction::decode(raw_instruction);
         assert_eq!(instruction, Instruction::fld {
-            rd: Register::x14,
-            rs1: Register::x26,
+            rd: FloatRegister::f14,
+            rs1: FloatRegister::f26,
             imm: 0b011010110111,
         });
     }
