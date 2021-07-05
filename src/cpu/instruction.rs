@@ -596,8 +596,11 @@ impl InstructionFormat {
                         let rs3 = FloatRegister::from(func5);
 
                         match (opcode, func3, irs2, fmt, func5) {
-                            (0100111, 0b010, _, _, _) => Instruction::fsw {
-                                imm: u64::from(rd) & ((func7 << 5) as u64), rs1, rs2
+                            (0b0100111, 0b010, _, _, _) => Instruction::fsw {
+                                imm: u64::from(rd)
+                                    | ((func7 << 5) as u64)
+                                    | ((func7 >> 6) as u64 * 0xFFFFFFFFFFFFF000),
+                                rs1, rs2
                             },
 
                             (0b1000011, _, _, FloatFormat::s, _) => Instruction::fmadd_s {rd, rm, rs1, rs2, rs3},
