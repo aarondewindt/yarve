@@ -321,154 +321,97 @@ impl InstructionFormat {
                     0xFFFFFFFFFFFFF000u64 * (instruction as u64 >> 31)
                     | (instruction as u64 >> 20);
 
-                match opcode {
-                    0b0010011 => {
-                        match func3 {
-                            0b000 => Instruction::addi{rd, rs1, imm},
-                            0b010 => Instruction::slti{rd, rs1, imm},
-                            0b011 => Instruction::sltiu{rd, rs1, imm},
-                            0b100 => Instruction::xori{rd, rs1, imm},
-                            0b110 => Instruction::ori{rd, rs1, imm},
-                            0b111 => Instruction::andi{rd, rs1, imm},
-                            0b001 => Instruction::slli{rd, rs1, shamt: imm & 0b111111},
-                            0b101 => {
-                                let shamt = imm & 0b111111;
-                                let func6 = imm >> 6;
-                                match func6 {
-                                    0x00 => Instruction::srli{rd, rs1, shamt},
-                                    0x10 => Instruction::srai{rd, rs1, shamt},
-                                    _ => Instruction::Undefined{
-                                        instruction,
-                                        msg: format!("format: I, opcode: {:07b}, func3: {:b}, \
-                                                  func6: {:b}", opcode, func3, func6)
-                                    }
-                                }
-                            },
-
+                match (opcode, func3) {
+                    (0b0010011, 0b000) => Instruction::addi{rd, rs1, imm},
+                    (0b0010011, 0b010) => Instruction::slti{rd, rs1, imm},
+                    (0b0010011, 0b011) => Instruction::sltiu{rd, rs1, imm},
+                    (0b0010011, 0b100) => Instruction::xori{rd, rs1, imm},
+                    (0b0010011, 0b110) => Instruction::ori{rd, rs1, imm},
+                    (0b0010011, 0b111) => Instruction::andi{rd, rs1, imm},
+                    (0b0010011, 0b001) => Instruction::slli{rd, rs1, shamt: imm & 0b111111},
+                    (0b0010011, 0b101) => {
+                        let shamt = imm & 0b111111;
+                        let func6 = imm >> 6;
+                        match func6 {
+                            0x00 => Instruction::srli{rd, rs1, shamt},
+                            0x10 => Instruction::srai{rd, rs1, shamt},
                             _ => Instruction::Undefined{
                                 instruction,
-                                msg: format!("format: I, opcode: {:07b}, func3: {:b}", opcode, func3)
+                                msg: format!("format: I, opcode: {:07b}, func3: {:b}, \
+                                          func6: {:b}", opcode, func3, func6)
                             }
                         }
                     },
 
-                    0b0000011 => {
-                        match func3 {
-                            0b000 => Instruction::lb{rd, rs1, imm},
-                            0b001 => Instruction::lh{rd, rs1, imm},
-                            0b010 => Instruction::lw{rd, rs1, imm},
-                            0b100 => Instruction::lbu{rd, rs1, imm},
-                            0b101 => Instruction::lhu{rd, rs1, imm},
-                            0b110 => Instruction::lwu{rd, rs1, imm},
-                            0b011 => Instruction::ld{rd, rs1, imm},
+
+                    (0b0000011, 0b000) => Instruction::lb{rd, rs1, imm},
+                    (0b0000011, 0b001) => Instruction::lh{rd, rs1, imm},
+                    (0b0000011, 0b010) => Instruction::lw{rd, rs1, imm},
+                    (0b0000011, 0b100) => Instruction::lbu{rd, rs1, imm},
+                    (0b0000011, 0b101) => Instruction::lhu{rd, rs1, imm},
+                    (0b0000011, 0b110) => Instruction::lwu{rd, rs1, imm},
+                    (0b0000011, 0b011) => Instruction::ld{rd, rs1, imm},
+
+                    (0b1100111, 0b000) => Instruction::jalr{rd, rs1, imm},
+
+                    (0b1110011, 0b000) => {
+                        match imm {
+                            0 => Instruction::ecall,
+                            1 => Instruction::ebreak,
                             _ => Instruction::Undefined{
                                 instruction,
-                                msg: format!("format: I, opcode: {:07b}, func3: {:b}", opcode, func3)
+                                msg: format!(
+                                    "format: I, opcode: {:07b}, func3: {:b}, imm {:b}",
+                                    opcode, func3, imm)
                             }
                         }
                     },
+                    (0b1110011, 0b001) => Instruction::csrrw{rd, rs1, imm},
+                    (0b1110011, 0b010) => Instruction::csrrs{rd, rs1, imm},
+                    (0b1110011, 0b011) => Instruction::csrrc{rd, rs1, imm},
+                    (0b1110011, 0b101) => Instruction::csrrwi{rd, uimm, imm},
+                    (0b1110011, 0b110) => Instruction::csrrsi{rd, uimm, imm},
+                    (0b1110011, 0b111) => Instruction::csrrci{rd, uimm, imm},
 
-                    0b1100111 => {
-                        match func3 {
-                            0b000 => Instruction::jalr{rd, rs1, imm},
+                    (0b0011011, 0b000) => Instruction::addiw{rd, rs1, imm},
+                    (0b0011011, 0b001) => Instruction::slliw{rd, rs1, shamt: imm & 0b11111},
+                    (0b0011011, 0b101) => {
+                        let shamt = imm & 0b11111;
+                        let func7 = imm >> 5;
+                        match func7 {
+                            0x00 => Instruction::srliw{rd, rs1, shamt},
+                            0x20 => Instruction::sraiw{rd, rs1, shamt},
                             _ => Instruction::Undefined{
                                 instruction,
-                                msg: format!("format: I, opcode: {:07b}, func3: {:b}", opcode, func3)
+                                msg: format!("format: I, opcode: {:07b}, func3: {:b}, \
+                                          func7: {:b}", opcode, func3, func7)
                             }
                         }
                     },
 
-                    0b1110011 => {
-                        match func3 {
-                            0b000 => {
-                                match imm {
-                                    0 => Instruction::ecall,
-                                    1 => Instruction::ebreak,
-                                    _ => Instruction::Undefined{
-                                        instruction,
-                                        msg: format!(
-                                            "format: I, opcode: {:07b}, func3: {:b}, imm {:b}",
-                                            opcode, func3, imm)
-                                    }
-                                }
-                            },
-                            0b001 => Instruction::csrrw{rd, rs1, imm},
-                            0b010 => Instruction::csrrs{rd, rs1, imm},
-                            0b011 => Instruction::csrrc{rd, rs1, imm},
-                            0b101 => Instruction::csrrwi{rd, uimm, imm},
-                            0b110 => Instruction::csrrsi{rd, uimm, imm},
-                            0b111 => Instruction::csrrci{rd, uimm, imm},
-                            _ => Instruction::Undefined {
-                                instruction,
-                                msg: format!("format: I, opcode: {:07b}, func3: {:b}", opcode, func3)
-                            }
+                    (0b0001111, 0b001) => Instruction::fence_i{rd, rs1, imm},
+                    (0b0001111, 0b000) => {
+                        let succ = imm & 0b1111;
+                        let pred = (imm >> 4) & 0b1111;
+                        let fm = (imm >> 8) & 0b1111;
+                        match (fm, pred, succ, rs1, rd) {
+                            (0b1000, 0b0011, 0b0011, Register::x0, Register::x0) => Instruction::fence_tso,
+                            (0b0000, 0b0001, 0b0000, Register::x0, Register::x0) => Instruction::pause,
+                            (fm, pred, succ, rs1, rd) =>
+                                Instruction::fence{rd, rs1, succ, pred, fm}
                         }
                     },
 
-                    0b0011011 => {
-                        match func3 {
-                            0b000 => Instruction::addiw{rd, rs1, imm},
-                            0b001 => Instruction::slliw{rd, rs1, shamt: imm & 0b11111},
-                            0b101 => {
-                                let shamt = imm & 0b11111;
-                                let func7 = imm >> 5;
-                                match func7 {
-                                    0x00 => Instruction::srliw{rd, rs1, shamt},
-                                    0x20 => Instruction::sraiw{rd, rs1, shamt},
-                                    _ => Instruction::Undefined{
-                                        instruction,
-                                        msg: format!("format: I, opcode: {:07b}, func3: {:b}, \
-                                                  func7: {:b}", opcode, func3, func7)
-                                    }
-                                }
-                            },
-                            _ => Instruction::Undefined{
-                                instruction,
-                                msg: format!("format: I, opcode: {:07b}, func3: {:b}", opcode, func3)
-                            }
-                        }
-                    },
-
-                    0b0001111 => {
-                        match func3 {
-                            0b001 => Instruction::fence_i{rd, rs1, imm},
-                            0b000 => {
-                                let succ = imm & 0b1111;
-                                let pred = (imm >> 4) & 0b1111;
-                                let fm = (imm >> 8) & 0b1111;
-                                match (fm, pred, succ, rs1, rd) {
-                                    (0b1000, 0b0011, 0b0011, Register::x0, Register::x0) => Instruction::fence_tso,
-                                    (0b0000, 0b0001, 0b0000, Register::x0, Register::x0) => Instruction::pause,
-                                    (fm, pred, succ, rs1, rd) =>
-                                        Instruction::fence{rd, rs1, succ, pred, fm}
-                                }
-                            },
-                            _ => Instruction::Undefined{
-                                instruction,
-                                msg: format!("format: I, opcode: {:07b}, func3: {:b}", opcode, func3)
-                            }
-                        }
-                    },
-
-                    0b0000111 => {
-                        match func3 {
-                            0b010 => Instruction::flw{rd: FloatRegister::from(rd),
+                    (0b0000111, 0b010) => Instruction::flw{rd: FloatRegister::from(rd),
                                                       rs1: FloatRegister::from(rs1), imm},
-                            0b011 => Instruction::fld{rd: FloatRegister::from(rd),
+                    (0b0000111, 0b011) => Instruction::fld{rd: FloatRegister::from(rd),
                                                       rs1: FloatRegister::from(rs1), imm},
-                            _ => Instruction::Undefined{
-                                instruction,
-                                msg: format!("format: I, opcode: {:07b}, func3: {:b}", opcode, func3)
-                            }
-                        }
-                    },
 
                     _ => Instruction::Undefined{
                         instruction,
-                        msg: format!("format: I, opcode: {:07b}", opcode)
+                        msg: format!("format: I, opcode: {:07b}, func3: {:03b}",
+                                     opcode, func3)
                     }
-
-
                 }
             },
 
@@ -523,7 +466,7 @@ impl InstructionFormat {
                         _ => Instruction::Undefined{
                             instruction,
                             msg: format!("format: R, opcode: {:07b}, \
-                                          func3: {:b}, func7: {:b}", opcode, func3, func7)
+                                          func3: {:03b}, func7: {:b}", opcode, func3, func7)
                         }
                     },
 
@@ -631,7 +574,6 @@ impl InstructionFormat {
                             (0b1010011, _, 0b00011, FloatFormat::s, 0b11000) => Instruction::fcv_tlu_s {rd, rm, rs1},
                             (0b1010011, _, 0b00010, FloatFormat::s, 0b11010) => Instruction::fcv_ts_l {rd, rm, rs1},
                             (0b1010011, _, 0b00011, FloatFormat::s, 0b11010) => Instruction::fcv_ts_lu {rd, rm, rs1},
-
 
                             _ => Instruction::Undefined{
                                 instruction,

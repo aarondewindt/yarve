@@ -993,10 +993,6 @@ mod test_instruction_decoding_r {
     fn fsw_sign_extend() {
         let raw_instruction: u32 = 0b_11010_00_01011_11010_010_01110_0100111;
         let instruction = Instruction::decode(raw_instruction);
-        if let Instruction::fsw{imm, rs1, rs2} = instruction {
-            println!("{:012b}", imm)
-        }
-
         assert_eq!(instruction, Instruction::fsw {
             imm: 0xFFFFFFFFFFFFFD0E,
             rs1: FloatRegister::f26,
