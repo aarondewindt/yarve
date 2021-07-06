@@ -1,13 +1,13 @@
 use crate::cpu::register::{Register, FloatRegister};
 
 
-pub struct _Core {
+pub struct Core {
     _pc: u64,
     _registers: [u64; 32],
     _float_registers: [f64; 32],
 }
 
-impl _Core {
+impl Core {
     fn _get_register(&self, register: Register) -> u64 {
         match register {
             Register::x0 => 0,
