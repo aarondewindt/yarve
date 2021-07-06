@@ -999,4 +999,374 @@ mod test_instruction_decoding_r {
             rs2: FloatRegister::f11,
         });
     }
+
+    #[test]
+    fn fmadd_d() {
+        let raw_instruction: u32 = 0b_01100_01_10111_11010_011_01110_1000011;
+        let instruction = Instruction::decode(raw_instruction);
+        assert_eq!(instruction, Instruction::fmadd_d {
+            rd: FloatRegister::f14,
+            rm: RoundingMode::rup,
+            rs1: FloatRegister::f26,
+            rs2: FloatRegister::f23,
+            rs3: FloatRegister::f12
+        });
+    }
+
+    // fmsub_d
+    #[test]
+    fn fmsub_d() {
+        let raw_instruction: u32 = 0b_01100_01_10111_11010_011_01110_1000111;
+        let instruction = Instruction::decode(raw_instruction);
+        assert_eq!(instruction, Instruction::fmsub_d {
+            rd: FloatRegister::f14,
+            rm: RoundingMode::rup,
+            rs1: FloatRegister::f26,
+            rs2: FloatRegister::f23,
+            rs3: FloatRegister::f12
+        });
+    }
+
+    // fnmsub_d
+    #[test]
+    fn fnmsub_d() {
+        let raw_instruction: u32 = 0b_01100_01_10111_11010_011_01110_1001011;
+        let instruction = Instruction::decode(raw_instruction);
+        assert_eq!(instruction, Instruction::fnmsub_d {
+            rd: FloatRegister::f14,
+            rm: RoundingMode::rup,
+            rs1: FloatRegister::f26,
+            rs2: FloatRegister::f23,
+            rs3: FloatRegister::f12
+        });
+    }
+
+    // fnmadd_d
+    #[test]
+    fn fnmadd_d() {
+        let raw_instruction: u32 = 0b_01100_01_10111_11010_011_01110_1001111;
+        let instruction = Instruction::decode(raw_instruction);
+        assert_eq!(instruction, Instruction::fnmadd_d {
+            rd: FloatRegister::f14,
+            rm: RoundingMode::rup,
+            rs1: FloatRegister::f26,
+            rs2: FloatRegister::f23,
+            rs3: FloatRegister::f12
+        });
+    }
+
+    // fadd_d
+    #[test]
+    fn fadd_d() {
+        let raw_instruction: u32 = 0b_00000_01_10111_11010_011_01110_1010011;
+        let instruction = Instruction::decode(raw_instruction);
+        assert_eq!(instruction, Instruction::fadd_d {
+            rd: FloatRegister::f14,
+            rm: RoundingMode::rup,
+            rs1: FloatRegister::f26,
+            rs2: FloatRegister::f23,
+        });
+    }
+
+    // fsub_d
+    #[test]
+    fn fsub_d() {
+        let raw_instruction: u32 = 0b_00001_01_10111_11010_011_01110_1010011;
+        let instruction = Instruction::decode(raw_instruction);
+        assert_eq!(instruction, Instruction::fsub_d {
+            rd: FloatRegister::f14,
+            rm: RoundingMode::rup,
+            rs1: FloatRegister::f26,
+            rs2: FloatRegister::f23,
+        });
+    }
+
+    // fmul_d
+    #[test]
+    fn fmul_d() {
+        let raw_instruction: u32 = 0b_00010_01_10111_11010_011_01110_1010011;
+        let instruction = Instruction::decode(raw_instruction);
+        assert_eq!(instruction, Instruction::fmul_d {
+            rd: FloatRegister::f14,
+            rm: RoundingMode::rup,
+            rs1: FloatRegister::f26,
+            rs2: FloatRegister::f23,
+        });
+    }
+
+    // fdiv_d
+    #[test]
+    fn fdiv_d() {
+        let raw_instruction: u32 = 0b_00011_01_10111_11010_011_01110_1010011;
+        let instruction = Instruction::decode(raw_instruction);
+        assert_eq!(instruction, Instruction::fdiv_d {
+            rd: FloatRegister::f14,
+            rm: RoundingMode::rup,
+            rs1: FloatRegister::f26,
+            rs2: FloatRegister::f23,
+        });
+    }
+
+    // fsqrt_d
+    #[test]
+    fn fsqrt_d() {
+        let raw_instruction: u32 = 0b_01011_01_00000_11010_011_01110_1010011;
+        let instruction = Instruction::decode(raw_instruction);
+        assert_eq!(instruction, Instruction::fsqrt_d {
+            rd: FloatRegister::f14,
+            rm: RoundingMode::rup,
+            rs1: FloatRegister::f26,
+        });
+    }
+
+    // fsgnj_d
+    #[test]
+    fn fsgnj_d() {
+        let raw_instruction: u32 = 0b_00100_01_10111_11010_000_01110_1010011;
+        let instruction = Instruction::decode(raw_instruction);
+        assert_eq!(instruction, Instruction::fsgnj_d {
+            rd: FloatRegister::f14,
+            rs1: FloatRegister::f26,
+            rs2: FloatRegister::f23,
+        });
+    }
+
+    // fsgnjn_d
+    #[test]
+    fn fsgnjn_d() {
+        let raw_instruction: u32 = 0b_00100_01_10111_11010_001_01110_1010011;
+        let instruction = Instruction::decode(raw_instruction);
+        assert_eq!(instruction, Instruction::fsgnjn_d {
+            rd: FloatRegister::f14,
+            rs1: FloatRegister::f26,
+            rs2: FloatRegister::f23,
+        });
+    }
+
+    // fsgnjx_d
+    #[test]
+    fn fsgnjx_d() {
+        let raw_instruction: u32 = 0b_00100_01_10111_11010_010_01110_1010011;
+        let instruction = Instruction::decode(raw_instruction);
+        assert_eq!(instruction, Instruction::fsgnjx_d {
+            rd: FloatRegister::f14,
+            rs1: FloatRegister::f26,
+            rs2: FloatRegister::f23,
+        });
+    }
+
+    // fmin_d
+    #[test]
+    fn fmin_d() {
+        let raw_instruction: u32 = 0b_00101_01_10111_11010_000_01110_1010011;
+        let instruction = Instruction::decode(raw_instruction);
+        assert_eq!(instruction, Instruction::fmin_d {
+            rd: FloatRegister::f14,
+            rs1: FloatRegister::f26,
+            rs2: FloatRegister::f23,
+        });
+    }
+
+    // fmax_d
+    #[test]
+    fn fmax_d() {
+        let raw_instruction: u32 = 0b_00101_01_10111_11010_001_01110_1010011;
+        let instruction = Instruction::decode(raw_instruction);
+        assert_eq!(instruction, Instruction::fmax_d {
+            rd: FloatRegister::f14,
+            rs1: FloatRegister::f26,
+            rs2: FloatRegister::f23,
+        });
+    }
+
+    // fcvt_s_d
+    #[test]
+    fn fcvt_s_d() {
+        let raw_instruction: u32 = 0b_01000_01_00001_11010_011_01110_1010011;
+        let instruction = Instruction::decode(raw_instruction);
+        assert_eq!(instruction, Instruction::fcvt_s_d {
+            rd: FloatRegister::f14,
+            rm: RoundingMode::rup,
+            rs1: FloatRegister::f26,
+        });
+    }
+
+    // fcvt_d_s
+    #[test]
+    fn fcvt_d_s() {
+        let raw_instruction: u32 = 0b_01000_01_00000_11010_011_01110_1010011;
+        let instruction = Instruction::decode(raw_instruction);
+        assert_eq!(instruction, Instruction::fcvt_d_s {
+            rd: FloatRegister::f14,
+            rm: RoundingMode::rup,
+            rs1: FloatRegister::f26,
+        });
+    }
+
+    // feq_d
+    #[test]
+    fn feq_d() {
+        let raw_instruction: u32 = 0b_10100_01_10111_11010_010_01110_1010011;
+        let instruction = Instruction::decode(raw_instruction);
+        assert_eq!(instruction, Instruction::feq_d {
+            rd: FloatRegister::f14,
+            rs1: FloatRegister::f26,
+            rs2: FloatRegister::f23,
+        });
+    }
+
+    // flt_d
+    #[test]
+    fn flt_d() {
+        let raw_instruction: u32 = 0b_10100_01_10111_11010_001_01110_1010011;
+        let instruction = Instruction::decode(raw_instruction);
+        assert_eq!(instruction, Instruction::flt_d {
+            rd: FloatRegister::f14,
+            rs1: FloatRegister::f26,
+            rs2: FloatRegister::f23,
+        });
+    }
+
+    // fle_d
+    #[test]
+    fn fle_d() {
+        let raw_instruction: u32 = 0b_10100_01_10111_11010_000_01110_1010011;
+        let instruction = Instruction::decode(raw_instruction);
+        assert_eq!(instruction, Instruction::fle_d {
+            rd: FloatRegister::f14,
+            rs1: FloatRegister::f26,
+            rs2: FloatRegister::f23,
+        });
+    }
+
+    // fclass_d
+    #[test]
+    fn fclass_d() {
+        let raw_instruction: u32 = 0b_11100_01_00000_11010_001_01110_1010011;
+        let instruction = Instruction::decode(raw_instruction);
+        assert_eq!(instruction, Instruction::fclass_d {
+            rd: FloatRegister::f14,
+            rs1: FloatRegister::f26,
+        });
+    }
+
+    // fcvt_w_d
+    #[test]
+    fn fcvt_w_d() {
+        let raw_instruction: u32 = 0b_11000_01_00000_11010_011_01110_1010011;
+        let instruction = Instruction::decode(raw_instruction);
+        assert_eq!(instruction, Instruction::fcvt_w_d {
+            rd: FloatRegister::f14,
+            rm: RoundingMode::rup,
+            rs1: FloatRegister::f26,
+        });
+    }
+
+    // fcvt_wu_d
+    #[test]
+    fn fcvt_wu_d() {
+        let raw_instruction: u32 = 0b_11000_01_00001_11010_011_01110_1010011;
+        let instruction = Instruction::decode(raw_instruction);
+        assert_eq!(instruction, Instruction::fcvt_wu_d {
+            rd: FloatRegister::f14,
+            rm: RoundingMode::rup,
+            rs1: FloatRegister::f26,
+        });
+    }
+
+    // fcvt_d_w
+    #[test]
+    fn fcvt_d_w() {
+        let raw_instruction: u32 = 0b_11010_01_00000_11010_011_01110_1010011;
+        let instruction = Instruction::decode(raw_instruction);
+        assert_eq!(instruction, Instruction::fcvt_d_w {
+            rd: FloatRegister::f14,
+            rm: RoundingMode::rup,
+            rs1: FloatRegister::f26,
+        });
+    }
+
+    // fcvt_d_wu
+    #[test]
+    fn fcvt_d_wu() {
+        let raw_instruction: u32 = 0b_11010_01_00001_11010_011_01110_1010011;
+        let instruction = Instruction::decode(raw_instruction);
+        assert_eq!(instruction, Instruction::fcvt_d_wu {
+            rd: FloatRegister::f14,
+            rm: RoundingMode::rup,
+            rs1: FloatRegister::f26,
+        });
+    }
+
+    // fcvt_l_d
+    #[test]
+    fn fcvt_l_d() {
+        let raw_instruction: u32 = 0b_11000_01_00010_11010_011_01110_1010011;
+        let instruction = Instruction::decode(raw_instruction);
+        assert_eq!(instruction, Instruction::fcvt_l_d {
+            rd: FloatRegister::f14,
+            rm: RoundingMode::rup,
+            rs1: FloatRegister::f26,
+        });
+    }
+
+    // fcvt_lu_d
+    #[test]
+    fn fcvt_lu_d() {
+        let raw_instruction: u32 = 0b_11000_01_00011_11010_011_01110_1010011;
+        let instruction = Instruction::decode(raw_instruction);
+        assert_eq!(instruction, Instruction::fcvt_lu_d {
+            rd: FloatRegister::f14,
+            rm: RoundingMode::rup,
+            rs1: FloatRegister::f26,
+        });
+    }
+
+    // fmv_x_d
+    #[test]
+    fn fmv_x_d() {
+        let raw_instruction: u32 = 0b_11100_01_00000_11010_000_01110_1010011;
+        let instruction = Instruction::decode(raw_instruction);
+        assert_eq!(instruction, Instruction::fmv_x_d {
+            rd: FloatRegister::f14,
+            rs1: FloatRegister::f26,
+        });
+    }
+
+    // fcvt_d_l
+    #[test]
+    fn fcvt_d_l() {
+        let raw_instruction: u32 = 0b_11010_01_00010_11010_011_01110_1010011;
+        let instruction = Instruction::decode(raw_instruction);
+        assert_eq!(instruction, Instruction::fcvt_d_l {
+            rd: FloatRegister::f14,
+            rm: RoundingMode::rup,
+            rs1: FloatRegister::f26,
+        });
+    }
+
+    // fcvt_d_lu
+    #[test]
+    fn fcvt_d_lu() {
+        let raw_instruction: u32 = 0b_11010_01_00011_11010_011_01110_1010011;
+        let instruction = Instruction::decode(raw_instruction);
+        assert_eq!(instruction, Instruction::fcvt_d_lu {
+            rd: FloatRegister::f14,
+            rm: RoundingMode::rup,
+            rs1: FloatRegister::f26,
+        });
+    }
+
+    // fmv_d_x
+    #[test]
+    fn fmv_d_x() {
+        let raw_instruction: u32 = 0b_11110_01_00000_11010_000_01110_1010011;
+        let instruction = Instruction::decode(raw_instruction);
+        assert_eq!(instruction, Instruction::fmv_d_x {
+            rd: FloatRegister::f14,
+            rs1: FloatRegister::f26,
+        });
+    }
+
+
 }
