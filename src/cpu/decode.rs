@@ -365,22 +365,15 @@ impl InstructionFormat {
                 let imm = 0xFFFFFFFFFFFFF000 * (instruction as u64 >> 31)
                     | (imm115 << 5) | imm40;
 
-                match opcode {
-                    0b0100011 => {
-                        match func3 {
-                            0b000 => Instruction::sb{rs1, rs2, imm},
-                            0b001 => Instruction::sh{rs1, rs2, imm},
-                            0b010 => Instruction::sw{rs1, rs2, imm},
-                            0b011 => Instruction::sd{rs1, rs2, imm},
-                            _ => Instruction::Undefined{
-                                instruction,
-                                msg: format!("format: S, opcode: {:07b}, func3: {:03b}", opcode, func3)
-                            }
-                        }
-                    }
+                match (opcode, func3) {
+                        (0b0100011, 0b000) => Instruction::sb{rs1, rs2, imm},
+                        (0b0100011, 0b001) => Instruction::sh{rs1, rs2, imm},
+                        (0b0100011, 0b010) => Instruction::sw{rs1, rs2, imm},
+                        (0b0100011, 0b011) => Instruction::sd{rs1, rs2, imm},
+
                     _ => Instruction::Undefined{
                         instruction,
-                        msg: format!("format: S, opcode: {:07b}", opcode)
+                        msg: format!("format: S, opcode: {:07b}, func3: {:03b}", opcode, func3)
                     }
                 }
             }
@@ -397,25 +390,16 @@ impl InstructionFormat {
                 let imm = 0xFFFFFFFFFFFFF000 * imm12 |
                     (imm11 << 11) | (imm105 << 5) | (imm41 << 1);
 
-                match opcode {
-                    0b1100011 => {
-                        match func3 {
-                            0b000 => Instruction::beq{rs1, rs2, imm},
-                            0b001 => Instruction::bne{rs1, rs2, imm},
-                            0b100 => Instruction::blt{rs1, rs2, imm},
-                            0b101 => Instruction::bge{rs1, rs2, imm},
-                            0b110 => Instruction::bltu{rs1, rs2, imm},
-                            0b111 => Instruction::bgeu{rs1, rs2, imm},
-                            _ => Instruction::Undefined{
-                                instruction,
-                                msg: format!("format: B, opcode: {:07b}, func3: {:03b}", opcode, func3)
-                            }
-                        }
-                    },
-
+                match (opcode, func3) {
+                    (0b1100011, 0b000) => Instruction::beq{rs1, rs2, imm},
+                    (0b1100011, 0b001) => Instruction::bne{rs1, rs2, imm},
+                    (0b1100011, 0b100) => Instruction::blt{rs1, rs2, imm},
+                    (0b1100011, 0b101) => Instruction::bge{rs1, rs2, imm},
+                    (0b1100011, 0b110) => Instruction::bltu{rs1, rs2, imm},
+                    (0b1100011, 0b111) => Instruction::bgeu{rs1, rs2, imm},
                     _ => Instruction::Undefined{
                         instruction,
-                        msg: format!("format: B, opcode: {:07b}", opcode)
+                        msg: format!("format: B, opcode: {:07b}, func3: {:03b}", opcode, func3)
                     }
                 }
             }
