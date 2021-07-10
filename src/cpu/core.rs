@@ -1,43 +1,94 @@
-use crate::cpu::register::{Register, FloatRegister};
+use crate::cpu::register::{Register, XRegister, FRegister};
 
 
 use enum_map::EnumMap;
+use std::ops::{Index, IndexMut};
 
 
-pub struct Core {
-    pc: u64,
-    registers: EnumMap<Register, u64>,
-    float_registers: EnumMap<FloatRegister, u64>,
+pub struct CoreXRegisters {
+    registers: EnumMap<XRegister, u64>,
 }
 
-impl Core {
-    fn new() -> Core {
-        Core{
-            pc: 0,
+pub struct CoreFRegisters {
+    registers: EnumMap<FRegister, f64>,
+}
+
+
+impl CoreXRegisters {
+    fn new() -> CoreXRegisters {
+        CoreXRegisters {
             registers: enum_map! {
-                Register::x0 => 0, Register::x1 => 0, Register::x2 => 0, Register::x3 => 0,
-                Register::x4 => 0, Register::x5 => 0, Register::x6 => 0, Register::x7 => 0,
-                Register::x8 => 0, Register::x9 => 0, Register::x10 => 0, Register::x11 => 0,
-                Register::x12 => 0, Register::x13 => 0, Register::x14 => 0, Register::x15 => 0,
-                Register::x16 => 0, Register::x17 => 0, Register::x18 => 0, Register::x19 => 0,
-                Register::x20 => 0, Register::x21 => 0, Register::x22 => 0, Register::x23 => 0,
-                Register::x24 => 0, Register::x25 => 0, Register::x26 => 0, Register::x27 => 0,
-                Register::x28 => 0, Register::x29 => 0, Register::x30 => 0, Register::x31 => 0,
+                XRegister::x0 => 0, XRegister::x1 => 0, XRegister::x2 => 0, XRegister::x3 => 0,
+                XRegister::x4 => 0, XRegister::x5 => 0, XRegister::x6 => 0, XRegister::x7 => 0,
+                XRegister::x8 => 0, XRegister::x9 => 0, XRegister::x10 => 0, XRegister::x11 => 0,
+                XRegister::x12 => 0, XRegister::x13 => 0, XRegister::x14 => 0, XRegister::x15 => 0,
+                XRegister::x16 => 0, XRegister::x17 => 0, XRegister::x18 => 0, XRegister::x19 => 0,
+                XRegister::x20 => 0, XRegister::x21 => 0, XRegister::x22 => 0, XRegister::x23 => 0,
+                XRegister::x24 => 0, XRegister::x25 => 0, XRegister::x26 => 0, XRegister::x27 => 0,
+                XRegister::x28 => 0, XRegister::x29 => 0, XRegister::x30 => 0, XRegister::x31 => 0,
             },
-            float_registers: enum_map! {
-                FloatRegister::f0 => 0, FloatRegister::f1 => 0, FloatRegister::f2 => 0,
-                FloatRegister::f3 => 0, FloatRegister::f4 => 0, FloatRegister::f5 => 0,
-                FloatRegister::f6 => 0, FloatRegister::f7 => 0, FloatRegister::f8 => 0,
-                FloatRegister::f9 => 0, FloatRegister::f10 => 0, FloatRegister::f11 => 0,
-                FloatRegister::f12 => 0, FloatRegister::f13 => 0, FloatRegister::f14 => 0,
-                FloatRegister::f15 => 0, FloatRegister::f16 => 0, FloatRegister::f17 => 0,
-                FloatRegister::f18 => 0, FloatRegister::f19 => 0, FloatRegister::f20 => 0,
-                FloatRegister::f21 => 0, FloatRegister::f22 => 0, FloatRegister::f23 => 0,
-                FloatRegister::f24 => 0, FloatRegister::f25 => 0, FloatRegister::f26 => 0,
-                FloatRegister::f27 => 0, FloatRegister::f28 => 0, FloatRegister::f29 => 0,
-                FloatRegister::f30 => 0, FloatRegister::f31 => 0,
+        }
+    }
+}
+
+impl CoreFRegisters {
+    fn new() -> CoreFRegisters {
+        CoreFRegisters {
+            registers: enum_map! {
+                FRegister::f0 => 0., FRegister::f1 => 0., FRegister::f2 => 0.,
+                FRegister::f3 => 0., FRegister::f4 => 0., FRegister::f5 => 0.,
+                FRegister::f6 => 0., FRegister::f7 => 0., FRegister::f8 => 0.,
+                FRegister::f9 => 0., FRegister::f10 => 0., FRegister::f11 => 0.,
+                FRegister::f12 => 0., FRegister::f13 => 0., FRegister::f14 => 0.,
+                FRegister::f15 => 0., FRegister::f16 => 0., FRegister::f17 => 0.,
+                FRegister::f18 => 0., FRegister::f19 => 0., FRegister::f20 => 0.,
+                FRegister::f21 => 0., FRegister::f22 => 0., FRegister::f23 => 0.,
+                FRegister::f24 => 0., FRegister::f25 => 0., FRegister::f26 => 0.,
+                FRegister::f27 => 0., FRegister::f28 => 0., FRegister::f29 => 0.,
+                FRegister::f30 => 0., FRegister::f31 => 0.
             }
         }
     }
 }
 
+impl Index<XRegister> for CoreXRegisters {
+    type Output = u64;
+    fn index(&self, register: XRegister) -> &Self::Output {
+        &self.registers[register]
+    }
+}
+
+impl Index<FRegister> for CoreFRegisters {
+    type Output = f64;
+    fn index(&self, register: FRegister) -> &Self::Output {
+        &self.registers[register]
+    }
+}
+
+impl IndexMut<XRegister> for CoreXRegisters {
+    fn index_mut(&mut self, register: XRegister) -> &mut Self::Output {
+        &mut self.registers[register]
+    }
+}
+
+impl IndexMut<FRegister> for CoreFRegisters {
+    fn index_mut(&mut self, register: FRegister) -> &mut Self::Output {
+        &mut self.registers[register]
+    }
+}
+
+pub struct Core {
+    pc: u64,
+    x_registers: CoreXRegisters,
+    f_registers: CoreFRegisters
+}
+
+impl Core {
+    fn new() -> Core {
+        Core {
+            pc: 0,
+            x_registers: CoreXRegisters::new(),
+            f_registers: CoreFRegisters::new()
+        }
+    }
+}

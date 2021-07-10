@@ -1,4 +1,4 @@
-use crate::cpu::register::{Register, FloatRegister};
+use crate::cpu::register::{XRegister, FRegister};
 
 
 #[derive(Debug, PartialEq, Copy, Clone)]
@@ -11,7 +11,7 @@ pub enum RoundingMode {
     rup, // Round Up (towards +∞)
     rmm, // Round to Nearest, ties to Max Magnitude
     r#dyn, // In instruction’s rm field, selects dynamic rounding mode;
-         // In Rounding Mode register, reserved.
+         // In Rounding Mode XRegister, reserved.
 }
 
 impl From<u32> for RoundingMode {
@@ -74,224 +74,224 @@ pub enum Instruction {
 
     // RV32I Base Instruction Set
     // R: 0110011
-    add {rd: Register, rs1: Register, rs2: Register},
-    sub {rd: Register, rs1: Register, rs2: Register},
-    xor {rd: Register, rs1: Register, rs2: Register},
-    or {rd: Register, rs1: Register, rs2: Register},
-    and {rd: Register, rs1: Register, rs2: Register},
-    sll {rd: Register, rs1: Register, rs2: Register},
-    srl {rd: Register, rs1: Register, rs2: Register},
-    sra {rd: Register, rs1: Register, rs2: Register},
-    slt {rd: Register, rs1: Register, rs2: Register},
-    sltu {rd: Register, rs1: Register, rs2: Register},
+    add {rd: XRegister, rs1: XRegister, rs2: XRegister},
+    sub {rd: XRegister, rs1: XRegister, rs2: XRegister},
+    xor {rd: XRegister, rs1: XRegister, rs2: XRegister},
+    or {rd: XRegister, rs1: XRegister, rs2: XRegister},
+    and {rd: XRegister, rs1: XRegister, rs2: XRegister},
+    sll {rd: XRegister, rs1: XRegister, rs2: XRegister},
+    srl {rd: XRegister, rs1: XRegister, rs2: XRegister},
+    sra {rd: XRegister, rs1: XRegister, rs2: XRegister},
+    slt {rd: XRegister, rs1: XRegister, rs2: XRegister},
+    sltu {rd: XRegister, rs1: XRegister, rs2: XRegister},
 
     // I: 0010011
-    addi {rd: Register, rs1: Register, imm: u64},
-    xori {rd: Register, rs1: Register, imm: u64},
-    ori {rd: Register, rs1: Register, imm: u64},
-    andi {rd: Register, rs1: Register, imm: u64},
-    slli {rd: Register, rs1: Register, shamt: u64},
-    srli {rd: Register, rs1: Register, shamt: u64},
-    srai {rd: Register, rs1: Register, shamt: u64},
-    slti {rd: Register, rs1: Register, imm: u64},
-    sltiu {rd: Register, rs1: Register, imm: u64},
+    addi {rd: XRegister, rs1: XRegister, imm: u64},
+    xori {rd: XRegister, rs1: XRegister, imm: u64},
+    ori {rd: XRegister, rs1: XRegister, imm: u64},
+    andi {rd: XRegister, rs1: XRegister, imm: u64},
+    slli {rd: XRegister, rs1: XRegister, shamt: u64},
+    srli {rd: XRegister, rs1: XRegister, shamt: u64},
+    srai {rd: XRegister, rs1: XRegister, shamt: u64},
+    slti {rd: XRegister, rs1: XRegister, imm: u64},
+    sltiu {rd: XRegister, rs1: XRegister, imm: u64},
 
     // I: 0000011
-    lb {rd: Register, rs1: Register, imm: u64},
-    lh {rd: Register, rs1: Register, imm: u64},
-    lw {rd: Register, rs1: Register, imm: u64},
-    lbu {rd: Register, rs1: Register, imm: u64},
-    lhu {rd: Register, rs1: Register, imm: u64},
+    lb {rd: XRegister, rs1: XRegister, imm: u64},
+    lh {rd: XRegister, rs1: XRegister, imm: u64},
+    lw {rd: XRegister, rs1: XRegister, imm: u64},
+    lbu {rd: XRegister, rs1: XRegister, imm: u64},
+    lhu {rd: XRegister, rs1: XRegister, imm: u64},
 
     // S: 0100011
-    sb {rs1: Register, rs2: Register, imm: u64},
-    sh {rs1: Register, rs2: Register, imm: u64},
-    sw {rs1: Register, rs2: Register, imm: u64},
+    sb {rs1: XRegister, rs2: XRegister, imm: u64},
+    sh {rs1: XRegister, rs2: XRegister, imm: u64},
+    sw {rs1: XRegister, rs2: XRegister, imm: u64},
 
     // B: 1100011
-    beq {rs1: Register, rs2: Register, imm: u64},
-    bne {rs1: Register, rs2: Register, imm: u64},
-    blt {rs1: Register, rs2: Register, imm: u64},
-    bge {rs1: Register, rs2: Register, imm: u64},
-    bltu {rs1: Register, rs2: Register, imm: u64},
-    bgeu {rs1: Register, rs2: Register, imm: u64},
+    beq {rs1: XRegister, rs2: XRegister, imm: u64},
+    bne {rs1: XRegister, rs2: XRegister, imm: u64},
+    blt {rs1: XRegister, rs2: XRegister, imm: u64},
+    bge {rs1: XRegister, rs2: XRegister, imm: u64},
+    bltu {rs1: XRegister, rs2: XRegister, imm: u64},
+    bgeu {rs1: XRegister, rs2: XRegister, imm: u64},
 
-    jal {rd: Register, imm: u64},  // J: 1101111
-    jalr {rd: Register, rs1: Register, imm: u64},  // I: 1100111
+    jal {rd: XRegister, imm: u64},  // J: 1101111
+    jalr {rd: XRegister, rs1: XRegister, imm: u64},  // I: 1100111
 
-    lui {rd: Register, imm: u64},  // U: 0110111
-    auipc {rd: Register, imm: u64},  // U: 0010111
+    lui {rd: XRegister, imm: u64},  // U: 0110111
+    auipc {rd: XRegister, imm: u64},  // U: 0010111
 
     // I: 1110011
     ecall,
     ebreak,
 
     // ?: 0001111
-    fence {rd: Register, rs1: Register, succ: u64, pred: u64, fm: u64},
+    fence {rd: XRegister, rs1: XRegister, succ: u64, pred: u64, fm: u64},
     fence_tso,
     pause,
 
     // RV64I Base Instruction Set
     // I: 0000011
-    lwu {rd: Register, rs1: Register, imm: u64},
-    ld {rd: Register, rs1: Register, imm: u64},
+    lwu {rd: XRegister, rs1: XRegister, imm: u64},
+    ld {rd: XRegister, rs1: XRegister, imm: u64},
 
     // R: 0100011
-    sd {rs1: Register, rs2: Register, imm: u64},
+    sd {rs1: XRegister, rs2: XRegister, imm: u64},
 
     // I: 0011011
-    addiw {rd: Register, rs1: Register, imm: u64},
+    addiw {rd: XRegister, rs1: XRegister, imm: u64},
 
     // R: 0011011
-    slliw {rd: Register, rs1: Register, shamt: u64},
-    srliw {rd: Register, rs1: Register, shamt: u64},
-    sraiw {rd: Register, rs1: Register, shamt: u64},
+    slliw {rd: XRegister, rs1: XRegister, shamt: u64},
+    srliw {rd: XRegister, rs1: XRegister, shamt: u64},
+    sraiw {rd: XRegister, rs1: XRegister, shamt: u64},
 
     // R: 0111011
-    addw {rd: Register, rs1: Register, rs2: Register},
-    subw {rd: Register, rs1: Register, rs2: Register},
-    sllw {rd: Register, rs1: Register, rs2: Register},
-    srlw {rd: Register, rs1: Register, rs2: Register},
-    sraw {rd: Register, rs1: Register, rs2: Register},
+    addw {rd: XRegister, rs1: XRegister, rs2: XRegister},
+    subw {rd: XRegister, rs1: XRegister, rs2: XRegister},
+    sllw {rd: XRegister, rs1: XRegister, rs2: XRegister},
+    srlw {rd: XRegister, rs1: XRegister, rs2: XRegister},
+    sraw {rd: XRegister, rs1: XRegister, rs2: XRegister},
 
     // RV32/RV64 Zifencei Standard Extension
-    fence_i {rd: Register, rs1: Register, imm: u64},
+    fence_i {rd: XRegister, rs1: XRegister, imm: u64},
 
     // RV32/RV64 Zicsr Standard Extension
-    csrrw {rd: Register, rs1: Register, imm: u64},
-    csrrs {rd: Register, rs1: Register, imm: u64},
-    csrrc {rd: Register, rs1: Register, imm: u64},
-    csrrwi {rd: Register, uimm: u64, imm: u64},
-    csrrsi {rd: Register, uimm: u64, imm: u64},
-    csrrci {rd: Register, uimm: u64, imm: u64},
+    csrrw {rd: XRegister, rs1: XRegister, imm: u64},
+    csrrs {rd: XRegister, rs1: XRegister, imm: u64},
+    csrrc {rd: XRegister, rs1: XRegister, imm: u64},
+    csrrwi {rd: XRegister, uimm: u64, imm: u64},
+    csrrsi {rd: XRegister, uimm: u64, imm: u64},
+    csrrci {rd: XRegister, uimm: u64, imm: u64},
 
     // RV32M Standard Extension
     // R: 0110011
-    mul {rd: Register, rs1: Register, rs2: Register},
-    mulh {rd: Register, rs1: Register, rs2: Register},
-    mulhsu {rd: Register, rs1: Register, rs2: Register},
-    mulhu {rd: Register, rs1: Register, rs2: Register},
-    div {rd: Register, rs1: Register, rs2: Register},
-    divu {rd: Register, rs1: Register, rs2: Register},
-    rem {rd: Register, rs1: Register, rs2: Register},
-    remu {rd: Register, rs1: Register, rs2: Register},
+    mul {rd: XRegister, rs1: XRegister, rs2: XRegister},
+    mulh {rd: XRegister, rs1: XRegister, rs2: XRegister},
+    mulhsu {rd: XRegister, rs1: XRegister, rs2: XRegister},
+    mulhu {rd: XRegister, rs1: XRegister, rs2: XRegister},
+    div {rd: XRegister, rs1: XRegister, rs2: XRegister},
+    divu {rd: XRegister, rs1: XRegister, rs2: XRegister},
+    rem {rd: XRegister, rs1: XRegister, rs2: XRegister},
+    remu {rd: XRegister, rs1: XRegister, rs2: XRegister},
 
     // RV64M Standard Extension
-    mulw {rd: Register, rs1: Register, rs2: Register},
-    divw {rd: Register, rs1: Register, rs2: Register},
-    divuw {rd: Register, rs1: Register, rs2: Register},
-    remw {rd: Register, rs1: Register, rs2: Register},
-    remuw {rd: Register, rs1: Register, rs2: Register},
+    mulw {rd: XRegister, rs1: XRegister, rs2: XRegister},
+    divw {rd: XRegister, rs1: XRegister, rs2: XRegister},
+    divuw {rd: XRegister, rs1: XRegister, rs2: XRegister},
+    remw {rd: XRegister, rs1: XRegister, rs2: XRegister},
+    remuw {rd: XRegister, rs1: XRegister, rs2: XRegister},
 
     // RV32A Standard Extension
     // R: 0101111
-    lr_w {rd: Register, rs1: Register, rl: bool, aq: bool},
-    sc_w {rd: Register, rs1: Register, rs2: Register, rl: bool, aq: bool},
-    amoswap_w {rd: Register, rs1: Register, rs2: Register, rl: bool, aq: bool},
-    amoadd_w {rd: Register, rs1: Register, rs2: Register, rl: bool, aq: bool},
-    amoxor_w {rd: Register, rs1: Register, rs2: Register, rl: bool, aq: bool},
-    amoand_w {rd: Register, rs1: Register, rs2: Register, rl: bool, aq: bool},
-    amoor_w {rd: Register, rs1: Register, rs2: Register, rl: bool, aq: bool},
-    amomin_w {rd: Register, rs1: Register, rs2: Register, rl: bool, aq: bool},
-    amomax_w {rd: Register, rs1: Register, rs2: Register, rl: bool, aq: bool},
-    amominu_w {rd: Register, rs1: Register, rs2: Register, rl: bool, aq: bool},
-    amomaxu_w {rd: Register, rs1: Register, rs2: Register, rl: bool, aq: bool},
+    lr_w {rd: XRegister, rs1: XRegister, rl: bool, aq: bool},
+    sc_w {rd: XRegister, rs1: XRegister, rs2: XRegister, rl: bool, aq: bool},
+    amoswap_w {rd: XRegister, rs1: XRegister, rs2: XRegister, rl: bool, aq: bool},
+    amoadd_w {rd: XRegister, rs1: XRegister, rs2: XRegister, rl: bool, aq: bool},
+    amoxor_w {rd: XRegister, rs1: XRegister, rs2: XRegister, rl: bool, aq: bool},
+    amoand_w {rd: XRegister, rs1: XRegister, rs2: XRegister, rl: bool, aq: bool},
+    amoor_w {rd: XRegister, rs1: XRegister, rs2: XRegister, rl: bool, aq: bool},
+    amomin_w {rd: XRegister, rs1: XRegister, rs2: XRegister, rl: bool, aq: bool},
+    amomax_w {rd: XRegister, rs1: XRegister, rs2: XRegister, rl: bool, aq: bool},
+    amominu_w {rd: XRegister, rs1: XRegister, rs2: XRegister, rl: bool, aq: bool},
+    amomaxu_w {rd: XRegister, rs1: XRegister, rs2: XRegister, rl: bool, aq: bool},
 
     // RV64A Standard Extension
-    lr_d {rd: Register, rs1: Register, rl: bool, aq: bool},
-    sc_d {rd: Register, rs1: Register, rs2: Register, rl: bool, aq: bool},
-    amoswap_d {rd: Register, rs1: Register, rs2: Register, rl: bool, aq: bool},
-    amoadd_d {rd: Register, rs1: Register, rs2: Register, rl: bool, aq: bool},
-    amoxor_d {rd: Register, rs1: Register, rs2: Register, rl: bool, aq: bool},
-    amoand_d {rd: Register, rs1: Register, rs2: Register, rl: bool, aq: bool},
-    amoor_d {rd: Register, rs1: Register, rs2: Register, rl: bool, aq: bool},
-    amomin_d {rd: Register, rs1: Register, rs2: Register, rl: bool, aq: bool},
-    amomax_d {rd: Register, rs1: Register, rs2: Register, rl: bool, aq: bool},
-    amominu_d {rd: Register, rs1: Register, rs2: Register, rl: bool, aq: bool},
-    amomaxu_d {rd: Register, rs1: Register, rs2: Register, rl: bool, aq: bool},
+    lr_d {rd: XRegister, rs1: XRegister, rl: bool, aq: bool},
+    sc_d {rd: XRegister, rs1: XRegister, rs2: XRegister, rl: bool, aq: bool},
+    amoswap_d {rd: XRegister, rs1: XRegister, rs2: XRegister, rl: bool, aq: bool},
+    amoadd_d {rd: XRegister, rs1: XRegister, rs2: XRegister, rl: bool, aq: bool},
+    amoxor_d {rd: XRegister, rs1: XRegister, rs2: XRegister, rl: bool, aq: bool},
+    amoand_d {rd: XRegister, rs1: XRegister, rs2: XRegister, rl: bool, aq: bool},
+    amoor_d {rd: XRegister, rs1: XRegister, rs2: XRegister, rl: bool, aq: bool},
+    amomin_d {rd: XRegister, rs1: XRegister, rs2: XRegister, rl: bool, aq: bool},
+    amomax_d {rd: XRegister, rs1: XRegister, rs2: XRegister, rl: bool, aq: bool},
+    amominu_d {rd: XRegister, rs1: XRegister, rs2: XRegister, rl: bool, aq: bool},
+    amomaxu_d {rd: XRegister, rs1: XRegister, rs2: XRegister, rl: bool, aq: bool},
 
     // RV32F Standard Extension
     // I: 0000111
-    flw {rd: FloatRegister, rs1: FloatRegister, imm: u64},
+    flw {rd: FRegister, rs1: FRegister, imm: u64},
 
     // R: 0100111
-    fsw {imm: u64, rs1: FloatRegister, rs2: FloatRegister},
+    fsw {imm: u64, rs1: FRegister, rs2: FRegister},
 
     // R4: 1000011
-    fmadd_s {rd: FloatRegister, rm: RoundingMode, rs1: FloatRegister, rs2: FloatRegister, rs3: FloatRegister},
+    fmadd_s {rd: FRegister, rm: RoundingMode, rs1: FRegister, rs2: FRegister, rs3: FRegister},
 
     // R4: 1000111
-    fmsub_s {rd: FloatRegister, rm: RoundingMode, rs1: FloatRegister, rs2: FloatRegister, rs3: FloatRegister},
+    fmsub_s {rd: FRegister, rm: RoundingMode, rs1: FRegister, rs2: FRegister, rs3: FRegister},
 
     // R4: 1001011
-    fnmsub_s {rd: FloatRegister, rm: RoundingMode, rs1: FloatRegister, rs2: FloatRegister, rs3: FloatRegister},
+    fnmsub_s {rd: FRegister, rm: RoundingMode, rs1: FRegister, rs2: FRegister, rs3: FRegister},
 
     // R4: 1001111
-    fnmadd_s {rd: FloatRegister, rm: RoundingMode, rs1: FloatRegister, rs2: FloatRegister, rs3: FloatRegister},
+    fnmadd_s {rd: FRegister, rm: RoundingMode, rs1: FRegister, rs2: FRegister, rs3: FRegister},
 
     // R: 1010011
-    fadd_s {rd: FloatRegister, rm: RoundingMode, rs1: FloatRegister, rs2: FloatRegister},
-    fsub_s {rd: FloatRegister, rm: RoundingMode, rs1: FloatRegister, rs2: FloatRegister},
-    fmul_s {rd: FloatRegister, rm: RoundingMode, rs1: FloatRegister, rs2: FloatRegister},
-    fdiv_s {rd: FloatRegister, rm: RoundingMode, rs1: FloatRegister, rs2: FloatRegister},
-    fsqrt_s {rd: FloatRegister, rm: RoundingMode, rs1: FloatRegister},
-    fsgnj_s {rd: FloatRegister, rs1: FloatRegister, rs2: FloatRegister},
-    fsgnjn_s {rd: FloatRegister, rs1: FloatRegister, rs2: FloatRegister},
-    fsgnjx_s {rd: FloatRegister, rs1: FloatRegister, rs2: FloatRegister},
-    fmin_s {rd: FloatRegister, rs1: FloatRegister, rs2: FloatRegister},
-    fmax_s {rd: FloatRegister, rs1: FloatRegister, rs2: FloatRegister},
-    fcvt_w_s {rd: FloatRegister, rm: RoundingMode, rs1: FloatRegister},
-    fcvt_wu_s {rd: FloatRegister, rm: RoundingMode, rs1: FloatRegister},
-    fmv_x_w {rd: FloatRegister, rs1: FloatRegister},
-    feq_s {rd: FloatRegister, rs1: FloatRegister, rs2: FloatRegister},
-    flt_s {rd: FloatRegister, rs1: FloatRegister, rs2: FloatRegister},
-    fle_s {rd: FloatRegister, rs1: FloatRegister, rs2: FloatRegister},
-    fclass_s {rd: FloatRegister, rs1: FloatRegister},
-    fcvt_s_w {rd: FloatRegister, rm: RoundingMode, rs1: FloatRegister},
-    fcvt_s_wu {rd: FloatRegister, rm: RoundingMode, rs1: FloatRegister},
-    fmv_w_x {rd: FloatRegister, rs1: FloatRegister},
+    fadd_s {rd: FRegister, rm: RoundingMode, rs1: FRegister, rs2: FRegister},
+    fsub_s {rd: FRegister, rm: RoundingMode, rs1: FRegister, rs2: FRegister},
+    fmul_s {rd: FRegister, rm: RoundingMode, rs1: FRegister, rs2: FRegister},
+    fdiv_s {rd: FRegister, rm: RoundingMode, rs1: FRegister, rs2: FRegister},
+    fsqrt_s {rd: FRegister, rm: RoundingMode, rs1: FRegister},
+    fsgnj_s {rd: FRegister, rs1: FRegister, rs2: FRegister},
+    fsgnjn_s {rd: FRegister, rs1: FRegister, rs2: FRegister},
+    fsgnjx_s {rd: FRegister, rs1: FRegister, rs2: FRegister},
+    fmin_s {rd: FRegister, rs1: FRegister, rs2: FRegister},
+    fmax_s {rd: FRegister, rs1: FRegister, rs2: FRegister},
+    fcvt_w_s {rd: FRegister, rm: RoundingMode, rs1: FRegister},
+    fcvt_wu_s {rd: FRegister, rm: RoundingMode, rs1: FRegister},
+    fmv_x_w {rd: FRegister, rs1: FRegister},
+    feq_s {rd: FRegister, rs1: FRegister, rs2: FRegister},
+    flt_s {rd: FRegister, rs1: FRegister, rs2: FRegister},
+    fle_s {rd: FRegister, rs1: FRegister, rs2: FRegister},
+    fclass_s {rd: FRegister, rs1: FRegister},
+    fcvt_s_w {rd: FRegister, rm: RoundingMode, rs1: FRegister},
+    fcvt_s_wu {rd: FRegister, rm: RoundingMode, rs1: FRegister},
+    fmv_w_x {rd: FRegister, rs1: FRegister},
 
     // RV64F Standard Extension
     // R: 1010011
-    fcv_tl_s {rd: FloatRegister, rm: RoundingMode, rs1: FloatRegister},
-    fcv_tlu_s {rd: FloatRegister, rm: RoundingMode, rs1: FloatRegister},
-    fcv_ts_l {rd: FloatRegister, rm: RoundingMode, rs1: FloatRegister},
-    fcv_ts_lu {rd: FloatRegister, rm: RoundingMode, rs1: FloatRegister},
+    fcv_tl_s {rd: FRegister, rm: RoundingMode, rs1: FRegister},
+    fcv_tlu_s {rd: FRegister, rm: RoundingMode, rs1: FRegister},
+    fcv_ts_l {rd: FRegister, rm: RoundingMode, rs1: FRegister},
+    fcv_ts_lu {rd: FRegister, rm: RoundingMode, rs1: FRegister},
 
     // RV32D Standard Extension
-    fld {rd: FloatRegister, rs1: FloatRegister, imm: u64},
-    fsd {imm: u64, rs1: FloatRegister, rs2: FloatRegister},
-    fmadd_d {rd: FloatRegister, rm: RoundingMode, rs1: FloatRegister, rs2: FloatRegister, rs3: FloatRegister},
-    fmsub_d {rd: FloatRegister, rm: RoundingMode, rs1: FloatRegister, rs2: FloatRegister, rs3: FloatRegister},
-    fnmsub_d {rd: FloatRegister, rm: RoundingMode, rs1: FloatRegister, rs2: FloatRegister, rs3: FloatRegister},
-    fnmadd_d {rd: FloatRegister, rm: RoundingMode, rs1: FloatRegister, rs2: FloatRegister, rs3: FloatRegister},
-    fadd_d {rd: FloatRegister, rm: RoundingMode, rs1: FloatRegister, rs2: FloatRegister},
-    fsub_d {rd: FloatRegister, rm: RoundingMode, rs1: FloatRegister, rs2: FloatRegister},
-    fmul_d {rd: FloatRegister, rm: RoundingMode, rs1: FloatRegister, rs2: FloatRegister},
-    fdiv_d {rd: FloatRegister, rm: RoundingMode, rs1: FloatRegister, rs2: FloatRegister},
-    fsqrt_d {rd: FloatRegister, rm: RoundingMode, rs1: FloatRegister},
-    fsgnj_d {rd: FloatRegister, rs1: FloatRegister, rs2: FloatRegister},
-    fsgnjn_d {rd: FloatRegister, rs1: FloatRegister, rs2: FloatRegister},
-    fsgnjx_d {rd: FloatRegister, rs1: FloatRegister, rs2: FloatRegister},
-    fmin_d {rd: FloatRegister, rs1: FloatRegister, rs2: FloatRegister},
-    fmax_d {rd: FloatRegister, rs1: FloatRegister, rs2: FloatRegister},
-    fcvt_s_d {rd: FloatRegister, rm: RoundingMode, rs1: FloatRegister},
-    fcvt_d_s {rd: FloatRegister, rm: RoundingMode, rs1: FloatRegister},
-    feq_d {rd: FloatRegister, rs1: FloatRegister, rs2: FloatRegister},
-    flt_d {rd: FloatRegister, rs1: FloatRegister, rs2: FloatRegister},
-    fle_d {rd: FloatRegister, rs1: FloatRegister, rs2: FloatRegister},
-    fclass_d {rd: FloatRegister, rs1: FloatRegister},
-    fcvt_w_d {rd: FloatRegister, rm: RoundingMode, rs1: FloatRegister},
-    fcvt_wu_d {rd: FloatRegister, rm: RoundingMode, rs1: FloatRegister},
-    fcvt_d_w {rd: FloatRegister, rm: RoundingMode, rs1: FloatRegister},
-    fcvt_d_wu {rd: FloatRegister, rm: RoundingMode, rs1: FloatRegister},
+    fld {rd: FRegister, rs1: FRegister, imm: u64},
+    fsd {imm: u64, rs1: FRegister, rs2: FRegister},
+    fmadd_d {rd: FRegister, rm: RoundingMode, rs1: FRegister, rs2: FRegister, rs3: FRegister},
+    fmsub_d {rd: FRegister, rm: RoundingMode, rs1: FRegister, rs2: FRegister, rs3: FRegister},
+    fnmsub_d {rd: FRegister, rm: RoundingMode, rs1: FRegister, rs2: FRegister, rs3: FRegister},
+    fnmadd_d {rd: FRegister, rm: RoundingMode, rs1: FRegister, rs2: FRegister, rs3: FRegister},
+    fadd_d {rd: FRegister, rm: RoundingMode, rs1: FRegister, rs2: FRegister},
+    fsub_d {rd: FRegister, rm: RoundingMode, rs1: FRegister, rs2: FRegister},
+    fmul_d {rd: FRegister, rm: RoundingMode, rs1: FRegister, rs2: FRegister},
+    fdiv_d {rd: FRegister, rm: RoundingMode, rs1: FRegister, rs2: FRegister},
+    fsqrt_d {rd: FRegister, rm: RoundingMode, rs1: FRegister},
+    fsgnj_d {rd: FRegister, rs1: FRegister, rs2: FRegister},
+    fsgnjn_d {rd: FRegister, rs1: FRegister, rs2: FRegister},
+    fsgnjx_d {rd: FRegister, rs1: FRegister, rs2: FRegister},
+    fmin_d {rd: FRegister, rs1: FRegister, rs2: FRegister},
+    fmax_d {rd: FRegister, rs1: FRegister, rs2: FRegister},
+    fcvt_s_d {rd: FRegister, rm: RoundingMode, rs1: FRegister},
+    fcvt_d_s {rd: FRegister, rm: RoundingMode, rs1: FRegister},
+    feq_d {rd: FRegister, rs1: FRegister, rs2: FRegister},
+    flt_d {rd: FRegister, rs1: FRegister, rs2: FRegister},
+    fle_d {rd: FRegister, rs1: FRegister, rs2: FRegister},
+    fclass_d {rd: FRegister, rs1: FRegister},
+    fcvt_w_d {rd: FRegister, rm: RoundingMode, rs1: FRegister},
+    fcvt_wu_d {rd: FRegister, rm: RoundingMode, rs1: FRegister},
+    fcvt_d_w {rd: FRegister, rm: RoundingMode, rs1: FRegister},
+    fcvt_d_wu {rd: FRegister, rm: RoundingMode, rs1: FRegister},
 
     // RV64D Standard Extension
-    fcvt_l_d {rd: FloatRegister, rm: RoundingMode, rs1: FloatRegister},
-    fcvt_lu_d {rd: FloatRegister, rm: RoundingMode, rs1: FloatRegister},
-    fmv_x_d {rd: FloatRegister, rs1: FloatRegister},
-    fcvt_d_l {rd: FloatRegister, rm: RoundingMode, rs1: FloatRegister},
-    fcvt_d_lu {rd: FloatRegister, rm: RoundingMode, rs1: FloatRegister},
-    fmv_d_x {rd: FloatRegister, rs1: FloatRegister},
+    fcvt_l_d {rd: FRegister, rm: RoundingMode, rs1: FRegister},
+    fcvt_lu_d {rd: FRegister, rm: RoundingMode, rs1: FRegister},
+    fmv_x_d {rd: FRegister, rs1: FRegister},
+    fcvt_d_l {rd: FRegister, rm: RoundingMode, rs1: FRegister},
+    fcvt_d_lu {rd: FRegister, rm: RoundingMode, rs1: FRegister},
+    fmv_d_x {rd: FRegister, rs1: FRegister},
 
 }

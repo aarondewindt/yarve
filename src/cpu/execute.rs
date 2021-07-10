@@ -1,5 +1,5 @@
 use crate::cpu::instruction::{Instruction, RoundingMode, FloatFormat, InstructionFormat};
-use crate::cpu::register::{Register, FloatRegister};
+use crate::cpu::register::{XRegister, FRegister};
 use crate::cpu::core::Core;
 use crate::cpu::execute::InstructionExecuteError::NotImplemented;
 

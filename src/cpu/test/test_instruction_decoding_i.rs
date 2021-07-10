@@ -3,7 +3,7 @@
 #[cfg(test)]
 mod test_instruction_decoding_i {
     use crate::cpu::instruction::Instruction;
-    use crate::cpu::register::{Register, FloatRegister};
+    use crate::cpu::register::{XRegister, FRegister};
 
     // I format
     // 0b_000000000000_00000_000_00000_0000000
@@ -13,8 +13,8 @@ mod test_instruction_decoding_i {
         let raw_instruction: u32 = 0b_1_11010110111_11010_000_01110_1100111;
         let instruction = Instruction::decode(raw_instruction);
         assert_eq!(instruction, Instruction::jalr {
-            rd: Register::x14,
-            rs1: Register::x26,
+            rd: XRegister::x14,
+            rs1: XRegister::x26,
             imm: 0b1111111111111111111111111111111111111111111111111111_1_11010110111,
         });
     }
@@ -24,8 +24,8 @@ mod test_instruction_decoding_i {
         let raw_instruction: u32 = 0b_0_11010110111_11010_000_01110_1100111;
         let instruction = Instruction::decode(raw_instruction);
         assert_eq!(instruction, Instruction::jalr {
-            rd: Register::x14,
-            rs1: Register::x26,
+            rd: XRegister::x14,
+            rs1: XRegister::x26,
             imm: 0b0000000000000000000000000000000000000000000000000000_0_11010110111,
         });
     }
@@ -35,8 +35,8 @@ mod test_instruction_decoding_i {
         let raw_instruction: u32 = 0b_011010110111_11010_000_01110_1100111;
         let instruction = Instruction::decode(raw_instruction);
         assert_eq!(instruction, Instruction::jalr {
-            rd: Register::x14,
-            rs1: Register::x26,
+            rd: XRegister::x14,
+            rs1: XRegister::x26,
             imm: 0b011010110111,
         });
     }
@@ -46,8 +46,8 @@ mod test_instruction_decoding_i {
         let raw_instruction: u32 = 0b_011010110111_11010_000_01110_0000011;
         let instruction = Instruction::decode(raw_instruction);
         assert_eq!(instruction, Instruction::lb {
-            rd: Register::x14,
-            rs1: Register::x26,
+            rd: XRegister::x14,
+            rs1: XRegister::x26,
             imm: 0b011010110111,
         });
     }
@@ -57,8 +57,8 @@ mod test_instruction_decoding_i {
         let raw_instruction: u32 = 0b_011010110111_11010_001_01110_0000011;
         let instruction = Instruction::decode(raw_instruction);
         assert_eq!(instruction, Instruction::lh {
-            rd: Register::x14,
-            rs1: Register::x26,
+            rd: XRegister::x14,
+            rs1: XRegister::x26,
             imm: 0b011010110111,
         });
     }
@@ -68,8 +68,8 @@ mod test_instruction_decoding_i {
         let raw_instruction: u32 = 0b_011010110111_11010_010_01110_0000011;
         let instruction = Instruction::decode(raw_instruction);
         assert_eq!(instruction, Instruction::lw {
-            rd: Register::x14,
-            rs1: Register::x26,
+            rd: XRegister::x14,
+            rs1: XRegister::x26,
             imm: 0b011010110111,
         });
     }
@@ -79,8 +79,8 @@ mod test_instruction_decoding_i {
         let raw_instruction: u32 = 0b_011010110111_11010_100_01110_0000011;
         let instruction = Instruction::decode(raw_instruction);
         assert_eq!(instruction, Instruction::lbu {
-            rd: Register::x14,
-            rs1: Register::x26,
+            rd: XRegister::x14,
+            rs1: XRegister::x26,
             imm: 0b011010110111,
         });
     }
@@ -90,8 +90,8 @@ mod test_instruction_decoding_i {
         let raw_instruction: u32 = 0b_011010110111_11010_101_01110_0000011;
         let instruction = Instruction::decode(raw_instruction);
         assert_eq!(instruction, Instruction::lhu {
-            rd: Register::x14,
-            rs1: Register::x26,
+            rd: XRegister::x14,
+            rs1: XRegister::x26,
             imm: 0b011010110111,
         });
     }
@@ -101,8 +101,8 @@ mod test_instruction_decoding_i {
         let raw_instruction: u32 = 0b_011010110111_11010_000_01110_0010011;
         let instruction = Instruction::decode(raw_instruction);
         assert_eq!(instruction, Instruction::addi {
-            rd: Register::x14,
-            rs1: Register::x26,
+            rd: XRegister::x14,
+            rs1: XRegister::x26,
             imm: 0b011010110111,
         });
     }
@@ -112,8 +112,8 @@ mod test_instruction_decoding_i {
         let raw_instruction: u32 = 0b_011010110111_11010_010_01110_0010011;
         let instruction = Instruction::decode(raw_instruction);
         assert_eq!(instruction, Instruction::slti {
-            rd: Register::x14,
-            rs1: Register::x26,
+            rd: XRegister::x14,
+            rs1: XRegister::x26,
             imm: 0b011010110111,
         });
     }
@@ -123,8 +123,8 @@ mod test_instruction_decoding_i {
         let raw_instruction: u32 = 0b_011010110111_11010_011_01110_0010011;
         let instruction = Instruction::decode(raw_instruction);
         assert_eq!(instruction, Instruction::sltiu {
-            rd: Register::x14,
-            rs1: Register::x26,
+            rd: XRegister::x14,
+            rs1: XRegister::x26,
             imm: 0b011010110111,
         });
     }
@@ -134,8 +134,8 @@ mod test_instruction_decoding_i {
         let raw_instruction: u32 = 0b_011010110111_11010_100_01110_0010011;
         let instruction = Instruction::decode(raw_instruction);
         assert_eq!(instruction, Instruction::xori {
-            rd: Register::x14,
-            rs1: Register::x26,
+            rd: XRegister::x14,
+            rs1: XRegister::x26,
             imm: 0b011010110111,
         });
     }
@@ -145,8 +145,8 @@ mod test_instruction_decoding_i {
         let raw_instruction: u32 = 0b_011010110111_11010_110_01110_0010011;
         let instruction = Instruction::decode(raw_instruction);
         assert_eq!(instruction, Instruction::ori {
-            rd: Register::x14,
-            rs1: Register::x26,
+            rd: XRegister::x14,
+            rs1: XRegister::x26,
             imm: 0b011010110111,
         });
     }
@@ -156,8 +156,8 @@ mod test_instruction_decoding_i {
         let raw_instruction: u32 = 0b_011010110111_11010_111_01110_0010011;
         let instruction = Instruction::decode(raw_instruction);
         assert_eq!(instruction, Instruction::andi {
-            rd: Register::x14,
-            rs1: Register::x26,
+            rd: XRegister::x14,
+            rs1: XRegister::x26,
             imm: 0b011010110111,
         });
     }
@@ -167,8 +167,8 @@ mod test_instruction_decoding_i {
         let raw_instruction: u32 = 0b_011010110111_11010_110_01110_0000011;
         let instruction = Instruction::decode(raw_instruction);
         assert_eq!(instruction, Instruction::lwu {
-            rd: Register::x14,
-            rs1: Register::x26,
+            rd: XRegister::x14,
+            rs1: XRegister::x26,
             imm: 0b011010110111,
         });
     }
@@ -178,8 +178,8 @@ mod test_instruction_decoding_i {
         let raw_instruction: u32 = 0b_011010110111_11010_011_01110_0000011;
         let instruction = Instruction::decode(raw_instruction);
         assert_eq!(instruction, Instruction::ld {
-            rd: Register::x14,
-            rs1: Register::x26,
+            rd: XRegister::x14,
+            rs1: XRegister::x26,
             imm: 0b011010110111,
         });
     }
@@ -189,8 +189,8 @@ mod test_instruction_decoding_i {
         let raw_instruction: u32 = 0b_011010110111_11010_000_01110_0011011;
         let instruction = Instruction::decode(raw_instruction);
         assert_eq!(instruction, Instruction::addiw {
-            rd: Register::x14,
-            rs1: Register::x26,
+            rd: XRegister::x14,
+            rs1: XRegister::x26,
             imm: 0b011010110111,
         });
     }
@@ -200,8 +200,8 @@ mod test_instruction_decoding_i {
         let raw_instruction: u32 = 0b_011010110111_11010_001_01110_0001111;
         let instruction = Instruction::decode(raw_instruction);
         assert_eq!(instruction, Instruction::fence_i {
-            rd: Register::x14,
-            rs1: Register::x26,
+            rd: XRegister::x14,
+            rs1: XRegister::x26,
             imm: 0b011010110111,
         });
     }
@@ -211,8 +211,8 @@ mod test_instruction_decoding_i {
         let raw_instruction: u32 = 0b_011010110111_11010_001_01110_1110011;
         let instruction = Instruction::decode(raw_instruction);
         assert_eq!(instruction, Instruction::csrrw {
-            rd: Register::x14,
-            rs1: Register::x26,
+            rd: XRegister::x14,
+            rs1: XRegister::x26,
             imm: 0b011010110111,
         });
     }
@@ -222,8 +222,8 @@ mod test_instruction_decoding_i {
         let raw_instruction: u32 = 0b_011010110111_11010_010_01110_1110011;
         let instruction = Instruction::decode(raw_instruction);
         assert_eq!(instruction, Instruction::csrrs {
-            rd: Register::x14,
-            rs1: Register::x26,
+            rd: XRegister::x14,
+            rs1: XRegister::x26,
             imm: 0b011010110111,
         });
     }
@@ -233,8 +233,8 @@ mod test_instruction_decoding_i {
         let raw_instruction: u32 = 0b_011010110111_11010_011_01110_1110011;
         let instruction = Instruction::decode(raw_instruction);
         assert_eq!(instruction, Instruction::csrrc {
-            rd: Register::x14,
-            rs1: Register::x26,
+            rd: XRegister::x14,
+            rs1: XRegister::x26,
             imm: 0b011010110111,
         });
     }
@@ -244,7 +244,7 @@ mod test_instruction_decoding_i {
         let raw_instruction: u32 = 0b_011010110111_11010_101_01110_1110011;
         let instruction = Instruction::decode(raw_instruction);
         assert_eq!(instruction, Instruction::csrrwi {
-            rd: Register::x14,
+            rd: XRegister::x14,
             uimm: 0b11010,
             imm: 0b011010110111,
         });
@@ -255,7 +255,7 @@ mod test_instruction_decoding_i {
         let raw_instruction: u32 = 0b_011010110111_11010_110_01110_1110011;
         let instruction = Instruction::decode(raw_instruction);
         assert_eq!(instruction, Instruction::csrrsi {
-            rd: Register::x14,
+            rd: XRegister::x14,
             uimm: 0b11010,
             imm: 0b011010110111,
         });
@@ -266,7 +266,7 @@ mod test_instruction_decoding_i {
         let raw_instruction: u32 = 0b_001010110111_11010_111_01110_1110011;
         let instruction = Instruction::decode(raw_instruction);
         assert_eq!(instruction, Instruction::csrrci {
-            rd: Register::x14,
+            rd: XRegister::x14,
             uimm: 0b11010,
             imm: 0b001010110111,
         });
@@ -277,8 +277,8 @@ mod test_instruction_decoding_i {
         let raw_instruction: u32 = 0b_011010110111_11010_010_01110_0000111;
         let instruction = Instruction::decode(raw_instruction);
         assert_eq!(instruction, Instruction::flw {
-            rd: FloatRegister::f14,
-            rs1: FloatRegister::f26,
+            rd: FRegister::f14,
+            rs1: FRegister::f26,
             imm: 0b011010110111,
         });
     }
@@ -288,8 +288,8 @@ mod test_instruction_decoding_i {
         let raw_instruction: u32 = 0b_011010110111_11010_011_01110_0000111;
         let instruction = Instruction::decode(raw_instruction);
         assert_eq!(instruction, Instruction::fld {
-            rd: FloatRegister::f14,
-            rs1: FloatRegister::f26,
+            rd: FRegister::f14,
+            rs1: FRegister::f26,
             imm: 0b011010110111,
         });
     }
@@ -313,8 +313,8 @@ mod test_instruction_decoding_i {
         let raw_instruction: u32 = 0b_000000_110111_11010_001_01110_0010011;
         let instruction = Instruction::decode(raw_instruction);
         assert_eq!(instruction, Instruction::slli {
-            rd: Register::x14,
-            rs1: Register::x26,
+            rd: XRegister::x14,
+            rs1: XRegister::x26,
             shamt: 0b110111,
         });
     }
@@ -324,8 +324,8 @@ mod test_instruction_decoding_i {
         let raw_instruction: u32 = 0b_000000_010111_11010_101_01110_0010011;
         let instruction = Instruction::decode(raw_instruction);
         assert_eq!(instruction, Instruction::srli {
-            rd: Register::x14,
-            rs1: Register::x26,
+            rd: XRegister::x14,
+            rs1: XRegister::x26,
             shamt: 0b010111,
         });
     }
@@ -335,8 +335,8 @@ mod test_instruction_decoding_i {
         let raw_instruction: u32 = 0b_010000_110111_11010_101_01110_0010011;
         let instruction = Instruction::decode(raw_instruction);
         assert_eq!(instruction, Instruction::srai {
-            rd: Register::x14,
-            rs1: Register::x26,
+            rd: XRegister::x14,
+            rs1: XRegister::x26,
             shamt: 0b110111,
         });
     }

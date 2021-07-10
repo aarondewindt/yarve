@@ -1,5 +1,5 @@
 use crate::cpu::instruction::{Instruction, RoundingMode, FloatFormat, InstructionFormat};
-use crate::cpu::register::{Register, FloatRegister};
+use crate::cpu::register::{XRegister, FRegister};
 
 impl Instruction {
     pub fn decode(instruction: u32) -> Instruction {
@@ -19,10 +19,11 @@ impl InstructionFormat {
         let opcode: usize = (instruction & 0x7F) as usize;
         match self {
             InstructionFormat::I => {
-                let rd = Register::from((instruction >> 7) & 0b11111);
+                let rd_u32 = (instruction >> 7) & 0b11111;
+                let rd = XRegister::from(rd_u32);
                 let func3 = (instruction >> 12) & 0b111;
                 let uimm = ((instruction >> 15) & 0b11111) as u64;
-                let rs1 = Register::from(uimm as usize);
+                let rs1 = XRegister::from(uimm as u32);
                 let imm =
                     0xFFFFFFFFFFFFF000u64 * (instruction as u64 >> 31)
                         | (instruction as u64 >> 20);
@@ -101,17 +102,17 @@ impl InstructionFormat {
                         let pred = (imm >> 4) & 0b1111;
                         let fm = (imm >> 8) & 0b1111;
                         match (fm, pred, succ, rs1, rd) {
-                            (0b1000, 0b0011, 0b0011, Register::x0, Register::x0) => Instruction::fence_tso,
-                            (0b0000, 0b0001, 0b0000, Register::x0, Register::x0) => Instruction::pause,
+                            (0b1000, 0b0011, 0b0011, XRegister::x0, XRegister::x0) => Instruction::fence_tso,
+                            (0b0000, 0b0001, 0b0000, XRegister::x0, XRegister::x0) => Instruction::pause,
                             (fm, pred, succ, rs1, rd) =>
                                 Instruction::fence{rd, rs1, succ, pred, fm}
                         }
                     },
 
-                    (0b0000111, 0b010) => Instruction::flw{rd: FloatRegister::from(rd),
-                        rs1: FloatRegister::from(rs1), imm},
-                    (0b0000111, 0b011) => Instruction::fld{rd: FloatRegister::from(rd),
-                        rs1: FloatRegister::from(rs1), imm},
+                    (0b0000111, 0b010) => Instruction::flw{rd: FRegister::from(rd_u32),
+                                                           rs1: FRegister::from(uimm), imm},
+                    (0b0000111, 0b011) => Instruction::fld{rd: FRegister::from(rd_u32),
+                                                           rs1: FRegister::from(uimm), imm},
 
                     _ => Instruction::Undefined{
                         instruction,
@@ -122,7 +123,7 @@ impl InstructionFormat {
             },
 
             InstructionFormat::U => {
-                let rd = Register::from((instruction >> 7) & 0b11111);
+                let rd = XRegister::from((instruction >> 7) & 0b11111);
                 let imm =
                     0xFFFFFFFF00000000u64 * (instruction as u64 >> 31) |
                         (instruction & 0xFFFFF800u32) as u64;
@@ -139,22 +140,23 @@ impl InstructionFormat {
             },
 
             InstructionFormat::R => {
-                let rd = Register::from((instruction >> 7) & 0b11111);
+                let ird = (instruction >> 7) & 0b11111;
+                let rd = XRegister::from(ird);
                 let func3 = (instruction >> 12) & 0b111;
                 let irs1 = (instruction >> 15) & 0b11111;
                 let irs2 = (instruction >> 20) & 0b11111;
-                let rs1 = Register::from(irs1);
-                let rs2 = Register::from(irs2);
+                let rs1 = XRegister::from(irs1);
+                let rs2 = XRegister::from(irs2);
                 let func7 = instruction >> 25;
 
                 match opcode {
                     0b0110011 => match (func3, func7) {
                         (0x0, 0x00) => {Instruction::add{rd, rs1, rs2}},
                         (0x0, 0x20) => {Instruction::sub{rd, rs1, rs2}},
-                        (0x4, 0x0, ) => {Instruction::xor{rd, rs1, rs2}},
-                        (0x6, 0x0, ) => {Instruction::or{rd, rs1, rs2}},
-                        (0x7, 0x0, ) => {Instruction::and{rd, rs1, rs2}},
-                        (0x1, 0x0, ) => {Instruction::sll{rd, rs1, rs2}},
+                        (0x4, 0x0) => {Instruction::xor{rd, rs1, rs2}},
+                        (0x6, 0x0) => {Instruction::or{rd, rs1, rs2}},
+                        (0x7, 0x0) => {Instruction::and{rd, rs1, rs2}},
+                        (0x1, 0x0) => {Instruction::sll{rd, rs1, rs2}},
                         (0x5, 0x00) => {Instruction::srl{rd, rs1, rs2}},
                         (0x5, 0x20) => {Instruction::sra{rd, rs1, rs2}},
                         (0x2, 0x00) => {Instruction::slt{rd, rs1, rs2}},
@@ -236,24 +238,24 @@ impl InstructionFormat {
 
                     // Float instructions
                     0b0100111 | 0b1000011 | 0b1000111 | 0b1001011 | 0b1001111 | 0b1010011 => {
-                        let rd = FloatRegister::from(rd);
-                        let rs1 = FloatRegister::from(rs1);
-                        let rs2 = FloatRegister::from(rs2);
+                        let rd = FRegister::from(ird);
+                        let rs1 = FRegister::from(irs1);
+                        let rs2 = FRegister::from(irs2);
                         let rm = RoundingMode::from(func3);
                         let fmt = FloatFormat::from(func7 & 0b11);
                         let func5 = func7 >> 2;
-                        let rs3 = FloatRegister::from(func5);
+                        let rs3 = FRegister::from(func5);
 
                         match (opcode, func3, irs2, fmt, func5) {
                             (0b0100111, 0b010, _, _, _) => Instruction::fsw {
-                                imm: u64::from(rd)
+                                imm: (ird as u64)
                                     | ((func7 << 5) as u64)
                                     | ((func7 >> 6) as u64 * 0xFFFFFFFFFFFFF000),
                                 rs1, rs2
                             },
 
                             (0b0100111, 0b011, _, _, _) => Instruction::fsd {
-                                imm: u64::from(rd)
+                                imm: (ird as u64)
                                     | ((func7 << 5) as u64)
                                     | ((func7 >> 6) as u64 * 0xFFFFFFFFFFFFF000),
                                 rs1, rs2
@@ -338,7 +340,7 @@ impl InstructionFormat {
             },
 
             InstructionFormat::J => {
-                let rd = Register::from((instruction >> 7) & 0b11111);
+                let rd = XRegister::from((instruction >> 7) & 0b11111);
                 let imm1912 = ((instruction >> 12) & 0b11111111) as u64;
                 let imm11 = ((instruction >> 20) & 0b1) as u64;
                 let imm101 = ((instruction >> 21) & 0b1111111111) as u64;
@@ -359,8 +361,8 @@ impl InstructionFormat {
             InstructionFormat::S => {
                 let imm40 = ((instruction >> 7) & 0b11111) as u64;
                 let func3 = (instruction >> 12) & 0b111;
-                let rs1 = Register::from((instruction >> 15) & 0b11111);
-                let rs2 = Register::from((instruction >> 20) & 0b11111);
+                let rs1 = XRegister::from((instruction >> 15) & 0b11111);
+                let rs2 = XRegister::from((instruction >> 20) & 0b11111);
                 let imm115 = (instruction >> 25) as u64;
                 let imm = 0xFFFFFFFFFFFFF000 * (instruction as u64 >> 31)
                     | (imm115 << 5) | imm40;
@@ -382,8 +384,8 @@ impl InstructionFormat {
                 let imm11 = ((instruction >> 7) & 0b1) as u64;
                 let imm41 = ((instruction >> 8) & 0b1111) as u64;
                 let func3 = (instruction >> 12) & 0b111;
-                let rs1 = Register::from((instruction >> 15) & 0b11111);
-                let rs2 = Register::from((instruction >> 20) & 0b11111);
+                let rs1 = XRegister::from((instruction >> 15) & 0b11111);
+                let rs2 = XRegister::from((instruction >> 20) & 0b11111);
                 let imm105 = ((instruction >> 25) & 0b111111) as u64;
                 let imm12 = (instruction >> 31) as u64;
 
