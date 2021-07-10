@@ -19,7 +19,7 @@
 // f18–27   fs2–11  FP saved registers Callee
 // f28–31   ft8–11  FP temporaries Caller
 
-#[derive(Debug, PartialEq, Copy, Clone)]
+#[derive(Debug, PartialEq, Copy, Clone, Enum)]
 #[allow(non_camel_case_types)]
 pub enum Register {
     x0,
@@ -179,7 +179,7 @@ impl Register {
 }
 
 
-#[derive(Debug, PartialEq, Copy, Clone)]
+#[derive(Debug, PartialEq, Copy, Clone, Enum)]
 #[allow(non_camel_case_types)]
 pub enum FloatRegister {
     f0,
