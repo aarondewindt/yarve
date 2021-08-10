@@ -5,16 +5,13 @@ mod test_instruction_decoding_i {
     use crate::cpu::instruction::Instruction;
     use crate::cpu::register::XRegister;
 
-    // U format
-    // 0b_00000000000000000000_00000_0000000
-
     #[test]
     fn imm_sign_extension_1() {
         let raw_instruction: u32 = 0b_1_1101011011111010011_01110_0110111;
         let instruction = Instruction::decode(raw_instruction);
         assert_eq!(instruction, Instruction::lui {
             rd: XRegister::x14,
-            imm: 0b11111111111111111111111111111111_1_1101011011111010011_000000000000,
+            uimm: 0b11111111111111111111111111111111_1_1101011011111010011_000000000000,
         });
     }
 
@@ -24,7 +21,7 @@ mod test_instruction_decoding_i {
         let instruction = Instruction::decode(raw_instruction);
         assert_eq!(instruction, Instruction::lui {
             rd: XRegister::x14,
-            imm:  0b00000000000000000000000000000000_0_1101011011111010011_000000000000,
+            uimm:  0b00000000000000000000000000000000_0_1101011011111010011_000000000000,
         });
     }
 
@@ -34,7 +31,7 @@ mod test_instruction_decoding_i {
         let instruction = Instruction::decode(raw_instruction);
         assert_eq!(instruction, Instruction::lui {
             rd: XRegister::x14,
-            imm: 0b01101011011111010000_000000000000,
+            uimm: 0b01101011011111010000_000000000000,
         });
     }
 
@@ -44,7 +41,7 @@ mod test_instruction_decoding_i {
         let instruction = Instruction::decode(raw_instruction);
         assert_eq!(instruction, Instruction::lui {
             rd: XRegister::x14,
-            imm: 0b00101011011111010000_000000000000,
+            uimm: 0b00101011011111010000_000000000000,
         });
     }
 
@@ -54,7 +51,7 @@ mod test_instruction_decoding_i {
         let instruction = Instruction::decode(raw_instruction);
         assert_eq!(instruction, Instruction::auipc {
             rd: XRegister::x14,
-            imm: 0b01101011011111010000_000000000000,
+            uimm: 0b01101011011111010000_000000000000,
         });
     }
 }

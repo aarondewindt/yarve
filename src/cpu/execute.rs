@@ -1,5 +1,4 @@
-use crate::cpu::instruction::{Instruction, RoundingMode, FloatFormat, InstructionFormat};
-use crate::cpu::register::{XRegister, FRegister};
+use crate::cpu::instruction::Instruction;
 use crate::cpu::core::Core;
 
 
@@ -43,9 +42,7 @@ impl Instruction {
             },
 
             Instruction::sra{rd, rs1, rs2} => {
-                let rs1 = core.x_registers[*rs1];
-                let rs2 = core.x_registers[*rs2];
-                core.x_registers[*rd] = (u64::MAX << (64 - rs2)) * (rs1 >> 63) | (rs1 >> rs2);
+                core.x_registers[*rd] = core.x_registers[*rs1] >> (core.x_registers[*rs2] as i64);
             },
 
             Instruction::slt{rd, rs1, rs2} => {
@@ -60,6 +57,44 @@ impl Instruction {
                 core.x_registers[*rd] = if rs1 < rs2 {1} else {0};
             },
 
+            Instruction::addi {rd, rs1, imm} => {
+                let rs1 = core.x_registers[*rs1];
+                core.x_registers[*rd] = rs1.wrapping_add(*imm as u64);
+            },
+
+            Instruction::xori {rd, rs1, imm} => {
+                core.x_registers[*rd] = core.x_registers[*rs1] ^ imm;
+            },
+
+            Instruction::ori {rd, rs1, imm} => {
+                core.x_registers[*rd] = core.x_registers[*rs1] | imm;
+            },
+
+            Instruction::andi {rd, rs1, imm} => {
+                core.x_registers[*rd] = core.x_registers[*rs1] & imm;
+            },
+
+            Instruction::slli {rd, rs1, shamt} => {
+                core.x_registers[*rd] = core.x_registers[*rs1] << shamt;
+            },
+
+            Instruction::srli {rd, rs1, shamt} => {
+                core.x_registers[*rd] = core.x_registers[*rs1] >> shamt;
+            },
+
+            Instruction::srai {rd, rs1, shamt} => {
+                core.x_registers[*rd] = core.x_registers[*rs1] >> shamt;
+            },
+
+            Instruction::slti {rd, rs1, imm} => {
+                let rs1 = core.x_registers[*rs1] as i64;
+                core.x_registers[*rd] = if rs1 < *imm {1} else {0};
+            },
+
+            Instruction::sltiu {rd, rs1, imm} => {
+                let rs1 = core.x_registers[*rs1];
+                core.x_registers[*rd] = if rs1 < *imm {1} else {0};
+            },
 
             _ => {
                 return Err(InstructionExecuteError::NotImplemented)

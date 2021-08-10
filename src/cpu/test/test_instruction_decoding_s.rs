@@ -5,10 +5,8 @@ mod test_instruction_decoding_s {
     use crate::cpu::instruction::Instruction;
     use crate::cpu::register::XRegister;
 
-    // I format
-    // 0b_0000000_00000_00000_000_00000_0000000
-
     #[test]
+    #[allow(overflowing_literals)]
     fn imm_sign_extension_1() {
         let raw_instruction: u32 = 0b_1110101_10111_11010_000_01110_0100011;
         let instruction = Instruction::decode(raw_instruction);

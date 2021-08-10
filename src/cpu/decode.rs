@@ -25,16 +25,16 @@ impl InstructionFormat {
                 let uimm = ((instruction >> 15) & 0b11111) as u64;
                 let rs1 = XRegister::from(uimm as u32);
                 let imm =
-                    0xFFFFFFFFFFFFF000u64 * (instruction as u64 >> 31)
-                        | (instruction as u64 >> 20);
+                    (0xFFFFFFFFFFFFF000u64 * (instruction as u64 >> 31)
+                        | (instruction as u64 >> 20)) as i64;
 
                 match (opcode, func3) {
                     (0b0010011, 0b000) => Instruction::addi{rd, rs1, imm},
                     (0b0010011, 0b010) => Instruction::slti{rd, rs1, imm},
-                    (0b0010011, 0b011) => Instruction::sltiu{rd, rs1, imm},
-                    (0b0010011, 0b100) => Instruction::xori{rd, rs1, imm},
-                    (0b0010011, 0b110) => Instruction::ori{rd, rs1, imm},
-                    (0b0010011, 0b111) => Instruction::andi{rd, rs1, imm},
+                    (0b0010011, 0b011) => Instruction::sltiu{rd, rs1, imm: imm as u64},
+                    (0b0010011, 0b100) => Instruction::xori{rd, rs1, imm: imm as u64},
+                    (0b0010011, 0b110) => Instruction::ori{rd, rs1, imm: imm as u64},
+                    (0b0010011, 0b111) => Instruction::andi{rd, rs1, imm: imm as u64},
                     (0b0010011, 0b001) => Instruction::slli{rd, rs1, shamt: imm & 0b111111},
                     (0b0010011, 0b101) => {
                         let shamt = imm & 0b111111;
@@ -98,9 +98,9 @@ impl InstructionFormat {
 
                     (0b0001111, 0b001) => Instruction::fence_i{rd, rs1, imm},
                     (0b0001111, 0b000) => {
-                        let succ = imm & 0b1111;
-                        let pred = (imm >> 4) & 0b1111;
-                        let fm = (imm >> 8) & 0b1111;
+                        let succ = imm as u64 & 0b1111;
+                        let pred = (imm as u64 >> 4) & 0b1111;
+                        let fm = (imm as u64 >> 8) & 0b1111;
                         match (fm, pred, succ, rs1, rd) {
                             (0b1000, 0b0011, 0b0011, XRegister::x0, XRegister::x0) => Instruction::fence_tso,
                             (0b0000, 0b0001, 0b0000, XRegister::x0, XRegister::x0) => Instruction::pause,
@@ -124,13 +124,13 @@ impl InstructionFormat {
 
             InstructionFormat::U => {
                 let rd = XRegister::from((instruction >> 7) & 0b11111);
-                let imm =
+                let uimm =
                     0xFFFFFFFF00000000u64 * (instruction as u64 >> 31) |
                         (instruction & 0xFFFFF800u32) as u64;
 
                 match opcode {
-                    0b0110111 => Instruction::lui{rd, imm},
-                    0b0010111 => Instruction::auipc{rd, imm},
+                    0b0110111 => Instruction::lui{rd, uimm},
+                    0b0010111 => Instruction::auipc{rd, uimm},
 
                     _ => Instruction::Undefined{
                         instruction,
@@ -248,16 +248,16 @@ impl InstructionFormat {
 
                         match (opcode, func3, irs2, fmt, func5) {
                             (0b0100111, 0b010, _, _, _) => Instruction::fsw {
-                                imm: (ird as u64)
+                                imm: ((ird as u64)
                                     | ((func7 << 5) as u64)
-                                    | ((func7 >> 6) as u64 * 0xFFFFFFFFFFFFF000),
+                                    | ((func7 >> 6) as u64 * 0xFFFFFFFFFFFFF000)) as i64,
                                 rs1, rs2
                             },
 
                             (0b0100111, 0b011, _, _, _) => Instruction::fsd {
-                                imm: (ird as u64)
+                                imm: ((ird as u64)
                                     | ((func7 << 5) as u64)
-                                    | ((func7 >> 6) as u64 * 0xFFFFFFFFFFFFF000),
+                                    | ((func7 >> 6) as u64 * 0xFFFFFFFFFFFFF000)) as i64,
                                 rs1, rs2
                             },
 
@@ -346,8 +346,8 @@ impl InstructionFormat {
                 let imm101 = ((instruction >> 21) & 0b1111111111) as u64;
                 let imm20 = (instruction >> 31) as u64;
 
-                let imm = 0xFFFFFFFFFFF00000 * imm20 |
-                    (imm1912 << 12) | (imm11 << 11) | (imm101 << 1);
+                let imm = (0xFFFFFFFFFFF00000 * imm20 |
+                    (imm1912 << 12) | (imm11 << 11) | (imm101 << 1)) as i64;
 
                 match opcode {
                     1101111 => {Instruction::jal{rd, imm}},
@@ -364,8 +364,8 @@ impl InstructionFormat {
                 let rs1 = XRegister::from((instruction >> 15) & 0b11111);
                 let rs2 = XRegister::from((instruction >> 20) & 0b11111);
                 let imm115 = (instruction >> 25) as u64;
-                let imm = 0xFFFFFFFFFFFFF000 * (instruction as u64 >> 31)
-                    | (imm115 << 5) | imm40;
+                let imm = (0xFFFFFFFFFFFFF000 * (instruction as u64 >> 31)
+                    | (imm115 << 5) | imm40) as i64;
 
                 match (opcode, func3) {
                         (0b0100011, 0b000) => Instruction::sb{rs1, rs2, imm},
@@ -389,8 +389,8 @@ impl InstructionFormat {
                 let imm105 = ((instruction >> 25) & 0b111111) as u64;
                 let imm12 = (instruction >> 31) as u64;
 
-                let imm = 0xFFFFFFFFFFFFF000 * imm12 |
-                    (imm11 << 11) | (imm105 << 5) | (imm41 << 1);
+                let imm = (0xFFFFFFFFFFFFF000 * imm12 |
+                    (imm11 << 11) | (imm105 << 5) | (imm41 << 1)) as i64;
 
                 match (opcode, func3) {
                     (0b1100011, 0b000) => Instruction::beq{rs1, rs2, imm},

@@ -5,8 +5,6 @@ mod test_instruction_decoding_r {
     use crate::cpu::instruction::{Instruction, RoundingMode};
     use crate::cpu::register::{XRegister, FRegister};
 
-    // I format
-    // 0b_0000000_00000_00000_000_00000_0000000
 
     #[test]
     fn add() {
@@ -990,6 +988,7 @@ mod test_instruction_decoding_r {
     }
 
     #[test]
+    #[allow(overflowing_literals)]
     fn fsw_sign_extend() {
         let raw_instruction: u32 = 0b_11010_00_01011_11010_010_01110_0100111;
         let instruction = Instruction::decode(raw_instruction);

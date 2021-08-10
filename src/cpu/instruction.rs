@@ -86,41 +86,41 @@ pub enum Instruction {
     sltu {rd: XRegister, rs1: XRegister, rs2: XRegister},
 
     // I: 0010011
-    addi {rd: XRegister, rs1: XRegister, imm: u64},
+    addi {rd: XRegister, rs1: XRegister, imm: i64},
     xori {rd: XRegister, rs1: XRegister, imm: u64},
     ori {rd: XRegister, rs1: XRegister, imm: u64},
     andi {rd: XRegister, rs1: XRegister, imm: u64},
-    slli {rd: XRegister, rs1: XRegister, shamt: u64},
-    srli {rd: XRegister, rs1: XRegister, shamt: u64},
-    srai {rd: XRegister, rs1: XRegister, shamt: u64},
-    slti {rd: XRegister, rs1: XRegister, imm: u64},
+    slli {rd: XRegister, rs1: XRegister, shamt: i64},
+    srli {rd: XRegister, rs1: XRegister, shamt: i64},
+    srai {rd: XRegister, rs1: XRegister, shamt: i64},
+    slti {rd: XRegister, rs1: XRegister, imm: i64},
     sltiu {rd: XRegister, rs1: XRegister, imm: u64},
 
     // I: 0000011
-    lb {rd: XRegister, rs1: XRegister, imm: u64},
-    lh {rd: XRegister, rs1: XRegister, imm: u64},
-    lw {rd: XRegister, rs1: XRegister, imm: u64},
-    lbu {rd: XRegister, rs1: XRegister, imm: u64},
-    lhu {rd: XRegister, rs1: XRegister, imm: u64},
+    lb {rd: XRegister, rs1: XRegister, imm: i64},
+    lh {rd: XRegister, rs1: XRegister, imm: i64},
+    lw {rd: XRegister, rs1: XRegister, imm: i64},
+    lbu {rd: XRegister, rs1: XRegister, imm: i64},
+    lhu {rd: XRegister, rs1: XRegister, imm: i64},
 
     // S: 0100011
-    sb {rs1: XRegister, rs2: XRegister, imm: u64},
-    sh {rs1: XRegister, rs2: XRegister, imm: u64},
-    sw {rs1: XRegister, rs2: XRegister, imm: u64},
+    sb {rs1: XRegister, rs2: XRegister, imm: i64},
+    sh {rs1: XRegister, rs2: XRegister, imm: i64},
+    sw {rs1: XRegister, rs2: XRegister, imm: i64},
 
     // B: 1100011
-    beq {rs1: XRegister, rs2: XRegister, imm: u64},
-    bne {rs1: XRegister, rs2: XRegister, imm: u64},
-    blt {rs1: XRegister, rs2: XRegister, imm: u64},
-    bge {rs1: XRegister, rs2: XRegister, imm: u64},
-    bltu {rs1: XRegister, rs2: XRegister, imm: u64},
-    bgeu {rs1: XRegister, rs2: XRegister, imm: u64},
+    beq {rs1: XRegister, rs2: XRegister, imm: i64},
+    bne {rs1: XRegister, rs2: XRegister, imm: i64},
+    blt {rs1: XRegister, rs2: XRegister, imm: i64},
+    bge {rs1: XRegister, rs2: XRegister, imm: i64},
+    bltu {rs1: XRegister, rs2: XRegister, imm: i64},
+    bgeu {rs1: XRegister, rs2: XRegister, imm: i64},
 
-    jal {rd: XRegister, imm: u64},  // J: 1101111
-    jalr {rd: XRegister, rs1: XRegister, imm: u64},  // I: 1100111
+    jal {rd: XRegister, imm: i64},  // J: 1101111
+    jalr {rd: XRegister, rs1: XRegister, imm: i64},  // I: 1100111
 
-    lui {rd: XRegister, imm: u64},  // U: 0110111
-    auipc {rd: XRegister, imm: u64},  // U: 0010111
+    lui {rd: XRegister, uimm: u64},  // U: 0110111
+    auipc {rd: XRegister, uimm: u64},  // U: 0010111
 
     // I: 1110011
     ecall,
@@ -133,19 +133,19 @@ pub enum Instruction {
 
     // RV64I Base Instruction Set
     // I: 0000011
-    lwu {rd: XRegister, rs1: XRegister, imm: u64},
-    ld {rd: XRegister, rs1: XRegister, imm: u64},
+    lwu {rd: XRegister, rs1: XRegister, imm: i64},
+    ld {rd: XRegister, rs1: XRegister, imm: i64},
 
     // R: 0100011
-    sd {rs1: XRegister, rs2: XRegister, imm: u64},
+    sd {rs1: XRegister, rs2: XRegister, imm: i64},
 
     // I: 0011011
-    addiw {rd: XRegister, rs1: XRegister, imm: u64},
+    addiw {rd: XRegister, rs1: XRegister, imm: i64},
 
     // R: 0011011
-    slliw {rd: XRegister, rs1: XRegister, shamt: u64},
-    srliw {rd: XRegister, rs1: XRegister, shamt: u64},
-    sraiw {rd: XRegister, rs1: XRegister, shamt: u64},
+    slliw {rd: XRegister, rs1: XRegister, shamt: i64},
+    srliw {rd: XRegister, rs1: XRegister, shamt: i64},
+    sraiw {rd: XRegister, rs1: XRegister, shamt: i64},
 
     // R: 0111011
     addw {rd: XRegister, rs1: XRegister, rs2: XRegister},
@@ -155,15 +155,15 @@ pub enum Instruction {
     sraw {rd: XRegister, rs1: XRegister, rs2: XRegister},
 
     // RV32/RV64 Zifencei Standard Extension
-    fence_i {rd: XRegister, rs1: XRegister, imm: u64},
+    fence_i {rd: XRegister, rs1: XRegister, imm: i64},
 
     // RV32/RV64 Zicsr Standard Extension
-    csrrw {rd: XRegister, rs1: XRegister, imm: u64},
-    csrrs {rd: XRegister, rs1: XRegister, imm: u64},
-    csrrc {rd: XRegister, rs1: XRegister, imm: u64},
-    csrrwi {rd: XRegister, uimm: u64, imm: u64},
-    csrrsi {rd: XRegister, uimm: u64, imm: u64},
-    csrrci {rd: XRegister, uimm: u64, imm: u64},
+    csrrw {rd: XRegister, rs1: XRegister, imm: i64},
+    csrrs {rd: XRegister, rs1: XRegister, imm: i64},
+    csrrc {rd: XRegister, rs1: XRegister, imm: i64},
+    csrrwi {rd: XRegister, uimm: u64, imm: i64},
+    csrrsi {rd: XRegister, uimm: u64, imm: i64},
+    csrrci {rd: XRegister, uimm: u64, imm: i64},
 
     // RV32M Standard Extension
     // R: 0110011
@@ -212,10 +212,10 @@ pub enum Instruction {
 
     // RV32F Standard Extension
     // I: 0000111
-    flw {rd: FRegister, rs1: FRegister, imm: u64},
+    flw {rd: FRegister, rs1: FRegister, imm: i64},
 
     // R: 0100111
-    fsw {imm: u64, rs1: FRegister, rs2: FRegister},
+    fsw {imm: i64, rs1: FRegister, rs2: FRegister},
 
     // R4: 1000011
     fmadd_s {rd: FRegister, rm: RoundingMode, rs1: FRegister, rs2: FRegister, rs3: FRegister},
@@ -259,8 +259,8 @@ pub enum Instruction {
     fcv_ts_lu {rd: FRegister, rm: RoundingMode, rs1: FRegister},
 
     // RV32D Standard Extension
-    fld {rd: FRegister, rs1: FRegister, imm: u64},
-    fsd {imm: u64, rs1: FRegister, rs2: FRegister},
+    fld {rd: FRegister, rs1: FRegister, imm: i64},
+    fsd {imm: i64, rs1: FRegister, rs2: FRegister},
     fmadd_d {rd: FRegister, rm: RoundingMode, rs1: FRegister, rs2: FRegister, rs3: FRegister},
     fmsub_d {rd: FRegister, rm: RoundingMode, rs1: FRegister, rs2: FRegister, rs3: FRegister},
     fnmsub_d {rd: FRegister, rm: RoundingMode, rs1: FRegister, rs2: FRegister, rs3: FRegister},
