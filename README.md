@@ -1,4 +1,4 @@
-# RVE
+# YARVE (Yet Another RISC-V Emulator)
 
 RISC-V emulator in Rust. The main purpose of this project is 
 for me to get some programming experience in Rust programming 

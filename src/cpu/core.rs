@@ -1,4 +1,4 @@
-use crate::cpu::register::{Register, XRegister, FRegister};
+use crate::cpu::register::{XRegister, FRegister};
 
 
 use enum_map::EnumMap;
@@ -54,7 +54,7 @@ impl CoreFRegisters {
 impl Index<XRegister> for CoreXRegisters {
     type Output = u64;
     fn index(&self, register: XRegister) -> &Self::Output {
-        &self.registers[register]
+        if register == XRegister::x0 {&0} else {&self.registers[register]}
     }
 }
 
@@ -78,13 +78,13 @@ impl IndexMut<FRegister> for CoreFRegisters {
 }
 
 pub struct Core {
-    pc: u64,
-    x_registers: CoreXRegisters,
-    f_registers: CoreFRegisters
+    pub pc: u64,
+    pub x_registers: CoreXRegisters,
+    pub f_registers: CoreFRegisters
 }
 
 impl Core {
-    fn new() -> Core {
+    pub fn new() -> Core {
         Core {
             pc: 0,
             x_registers: CoreXRegisters::new(),
