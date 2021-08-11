@@ -285,4 +285,167 @@ mod test_dram {
         }
     }
 
+    #[test]
+    fn test_device_read_u8() {
+        let mut dram = DRAM::new(16);
+
+        let buffer = [
+            0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17,
+            0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F];
+
+        match dram.write_bytes(0, &buffer) {
+            Ok(()) => {},
+            Err(e) => {panic!("PANIC {:?}", e)}
+        }
+
+        match dram.read(2, 1, Endianness::LittleEndian) {
+            Ok(value) => assert_eq!(value, 0x12),
+            Err(e) => {panic!("PANIC {:?}", e)}
+        }
+
+        match dram.read(2, 1, Endianness::BigEndian) {
+            Ok(value) => assert_eq!(value, 0x12),
+            Err(e) => {panic!("PANIC {:?}", e)}
+        }
+
+        match dram.read(15, 1, Endianness::LittleEndian) {
+            Ok(value) => assert_eq!(value, 0x1F),
+            Err(e) => {panic!("PANIC {:?}", e)}
+        }
+
+        match dram.read(15, 1, Endianness::BigEndian) {
+            Ok(value) => assert_eq!(value, 0x1F),
+            Err(e) => {panic!("PANIC {:?}", e)}
+        }
+
+        match dram.read(0, 1, Endianness::LittleEndian) {
+            Ok(value) => assert_eq!(value, 0x10),
+            Err(e) => {panic!("PANIC {:?}", e)}
+        }
+
+        match dram.read(0, 1, Endianness::BigEndian) {
+            Ok(value) => assert_eq!(value, 0x10),
+            Err(e) => {panic!("PANIC {:?}", e)}
+        }
+    }
+
+    #[test]
+    fn test_device_read_u16() {
+        let mut dram = DRAM::new(16);
+
+        let buffer = [
+            0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17,
+            0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F];
+
+        match dram.write_bytes(0, &buffer) {
+            Ok(()) => {},
+            Err(e) => {panic!("PANIC {:?}", e)}
+        }
+
+        match dram.read(2, 2, Endianness::LittleEndian) {
+            Ok(value) => assert_eq!(value, 0x13_12),
+            Err(e) => {panic!("PANIC {:?}", e)}
+        }
+
+        match dram.read(2, 2, Endianness::BigEndian) {
+            Ok(value) => assert_eq!(value, 0x12_13),
+            Err(e) => {panic!("PANIC {:?}", e)}
+        }
+
+        match dram.read(14, 2, Endianness::LittleEndian) {
+            Ok(value) => assert_eq!(value, 0x1F_1E),
+            Err(e) => {panic!("PANIC {:?}", e)}
+        }
+
+        match dram.read(14, 2, Endianness::BigEndian) {
+            Ok(value) => assert_eq!(value, 0x1E_1F),
+            Err(e) => {panic!("PANIC {:?}", e)}
+        }
+
+        match dram.read(0, 2, Endianness::LittleEndian) {
+            Ok(value) => assert_eq!(value, 0x11_10),
+            Err(e) => {panic!("PANIC {:?}", e)}
+        }
+
+        match dram.read(0, 2, Endianness::BigEndian) {
+            Ok(value) => assert_eq!(value, 0x10_11),
+            Err(e) => {panic!("PANIC {:?}", e)}
+        }
+
+        match dram.read(15, 2, Endianness::BigEndian) {
+            Ok(value) => {
+                println!("{:x}", value);
+            },
+            Err(_) => {}
+        }
+    }
+
+    #[test]
+    fn test_device_read_u32() {
+        let mut dram = DRAM::new(16);
+
+        let buffer = [
+            0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17,
+            0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F];
+
+        match dram.write_bytes(0, &buffer) {
+            Ok(()) => {},
+            Err(e) => { panic!("PANIC {:?}", e) }
+        }
+
+        match dram.read(2, 4, Endianness::LittleEndian) {
+            Ok(value) => assert_eq!(value, 0x15_14_13_12),
+            Err(e) => { panic!("PANIC {:?}", e) }
+        }
+
+        match dram.read(2, 4, Endianness::BigEndian) {
+            Ok(value) => assert_eq!(value, 0x12_13_14_15),
+            Err(e) => { panic!("PANIC {:?}", e) }
+        }
+    }
+
+    #[test]
+    fn test_device_read_u64() {
+        let mut dram = DRAM::new(16);
+
+        let buffer = [
+            0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17,
+            0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F];
+
+        match dram.write_bytes(0, &buffer) {
+            Ok(()) => {},
+            Err(e) => { panic!("PANIC {:?}", e) }
+        }
+
+        match dram.read(2, 8, Endianness::LittleEndian) {
+            Ok(value) => assert_eq!(value, 0x19_18_17_16_15_14_13_12),
+            Err(e) => { panic!("PANIC {:?}", e) }
+        }
+
+        match dram.read(2, 8, Endianness::BigEndian) {
+            Ok(value) => assert_eq!(value, 0x12_13_14_15_16_17_18_19),
+            Err(e) => { panic!("PANIC {:?}", e) }
+        }
+
+        match dram.read(2, 8, Endianness::LittleEndian) {
+            Ok(value) => assert_eq!(value, 0x19_18_17_16_15_14_13_12),
+            Err(e) => { panic!("PANIC {:?}", e) }
+        }
+
+        match dram.read(2, 8, Endianness::BigEndian) {
+            Ok(value) => assert_eq!(value, 0x12_13_14_15_16_17_18_19),
+            Err(e) => { panic!("PANIC {:?}", e) }
+        }
+
+        match dram.read(8, 8, Endianness::LittleEndian) {
+            Ok(value) => assert_eq!(value, 0x1F_1E_1D_1C_1B_1A_19_18),
+            Err(e) => { panic!("PANIC {:?}", e) }
+        }
+
+        match dram.read(8, 8, Endianness::BigEndian) {
+            Ok(value) => assert_eq!(value, 0x18_19_1A_1B_1C_1D_1E_1F),
+            Err(e) => { panic!("PANIC {:?}", e) }
+        }
+    }
+
 }

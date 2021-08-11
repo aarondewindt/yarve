@@ -48,7 +48,7 @@ impl Device for DRAM {
     }
 
     fn read(&self, address: usize, size: usize, endianness: Endianness) -> Result<u64, DeviceError> {
-        if address <= self.size {
+        if (address + size) <= self.size {
             match size {
                 1..=8 => {
                     let bytes = &self.memory[address..(address+8)];
@@ -62,12 +62,15 @@ impl Device for DRAM {
 
                     match endianness {
                         Endianness::LittleEndian => {
-                            Ok(u64::from_le_bytes(bytes) >> ((8 - size) * 8))
+                            let mask = u64::MAX >> ((8 - size) * 8);
+                            Ok(u64::from_le_bytes(bytes) & mask)
                         },
                         Endianness::BigEndian => {
-                            Ok(0)
+                            let mask = u64::MAX << ((8 - size) * 8);
+                            Ok((u64::from_be_bytes(bytes) & mask) >> ((8 - size) * 8))
                         }
                     }
+
                 },
                 _ => Err(DeviceError::InvalidSize)
             }
@@ -78,7 +81,7 @@ impl Device for DRAM {
 
     fn write(&mut self, address: usize, value: u64, size: usize, endianness: Endianness)
         -> Result<(), DeviceError> {
-        if address <= self.size {
+        if (address + size) <= self.size {
             match size {
                 1..=8 => {
                     match endianness {
