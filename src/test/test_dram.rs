@@ -101,6 +101,13 @@ mod test_dram {
             [0, 56, 25, 100, 50, 56, 0, 0, 0, 0, 0, 0, 0, 0, 0, 12],
             Endianness::LittleEndian
         );
+
+        assert_case(
+            1,
+            24,
+            [0, 24, 25, 100, 50, 56, 0, 0, 0, 0, 0, 0, 0, 0, 0, 12],
+            Endianness::BigEndian
+        );
     }
 
     #[test]
@@ -151,6 +158,13 @@ mod test_dram {
             Endianness::LittleEndian
         );
 
+        assert_case(
+            13,
+            0x2a_08,
+            [43, 77, 43, 77, 0, 0, 0, 56, 105, 0, 0, 0, 0, 0x2a, 0x08, 0],
+            Endianness::BigEndian
+        );
+
         match dram.write(15, 19755, 2, Endianness::LittleEndian) {
             Ok(()) => {panic!("PANIC")},
             Err(_) => {}
@@ -199,6 +213,13 @@ mod test_dram {
             Endianness::LittleEndian
         );
 
+        assert_case(
+            12,
+            0x7A_3D_E5_1F,
+            [0, 0, 0, 100, 0, 0, 0x2B, 0x4D, 0x32, 0x54, 0, 0, 0x7A, 0x3D, 0xE5, 0x1F],
+            Endianness::BigEndian
+        );
+
         match dram.write(13, 19755, 4, Endianness::LittleEndian) {
             Ok(()) => {panic!("PANIC")},
             Err(_) => {}
@@ -243,8 +264,19 @@ mod test_dram {
         assert_case(
             8,
             0x54_32_4D_2B_7A_3D_E5_1F,
-            [0, 0, 0, 100, 0, 0, 0x1F, 0xE5, 0x1F, 0xE5, 0x3D, 0x7A, 0x2B, 0x4D, 0x32, 0x54],
+            [
+                0, 0, 0, 100, 0, 0, 0x1F, 0xE5,
+                0x1F, 0xE5, 0x3D, 0x7A, 0x2B, 0x4D, 0x32, 0x54],
             Endianness::LittleEndian
+        );
+
+        assert_case(
+            4,
+            0x54_32_4D_2B_7A_3D_E5_1F,
+            [
+                0, 0, 0, 100, 0x54, 0x32, 0x4D, 0x2B,
+                0x7A, 0x3D, 0xE5, 0x1F, 0x2B, 0x4D, 0x32, 0x54],
+            Endianness::BigEndian
         );
 
         match dram.write(9, 0x54_32_4D_2B_7A_3D_E5_1F, 8, Endianness::LittleEndian) {
