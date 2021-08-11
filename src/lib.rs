@@ -5,5 +5,8 @@ extern crate enum_map;
 extern crate num_derive;
 
 pub mod cpu;
-pub mod error;
-
+mod bus;
+mod device;
+mod dram;
+mod test;
+mod endianness;

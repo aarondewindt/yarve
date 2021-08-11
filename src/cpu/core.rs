@@ -80,7 +80,9 @@ impl IndexMut<FRegister> for CoreFRegisters {
 pub struct Core {
     pub pc: u64,
     pub x_registers: CoreXRegisters,
-    pub f_registers: CoreFRegisters
+    pub f_registers: CoreFRegisters,
+
+    
 }
 
 impl Core {
