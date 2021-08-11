@@ -14,7 +14,7 @@ pub struct Bus {
 
 impl Bus {
     pub fn new(devices: Vec<(usize, Box<dyn Device>)>) -> Bus {
-        let mut bus = Bus {
+        let mut bus = Self {
             address_space_size: 0,
             address_space_map: RangeMap::new(),
             devices: Vec::new()
@@ -60,9 +60,7 @@ impl Bus {
 }
 
 impl Device for Bus {
-    fn get_address_space_size(&self) -> usize{
-        self.address_space_size
-    }
+    fn get_address_space_size(&self) -> usize{ self.address_space_size }
 
     fn read_bytes(&self, address: usize, size: usize) -> Result<&[u8], DeviceError> {
         let (address_range, device) = self.get_device(address)?;
@@ -88,7 +86,5 @@ impl Device for Bus {
         device.write_int(address, value, size, endianness)
     }
 
-    fn as_any(&self) -> &dyn Any {
-        self
-    }
+    fn as_any(&self) -> &dyn Any { self }
 }

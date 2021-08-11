@@ -7,7 +7,7 @@ use std::any::Any;
 pub enum DeviceError {
     InvalidAddress,
     InvalidSize,
-    InternalDeviceError(Box<dyn Error>)
+    InternalDeviceError(Box<dyn Error>),
 }
 
 impl Display for DeviceError {

@@ -10,3 +10,4 @@ mod device;
 mod dram;
 mod test;
 mod endianness;
+mod uart;

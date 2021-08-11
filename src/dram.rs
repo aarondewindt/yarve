@@ -12,7 +12,7 @@ pub struct DRAM {
 
 impl DRAM {
     pub fn new(size: usize) -> DRAM {
-        DRAM {
+        Self {
             size,
             memory: vec![0; size + 7]
         }
@@ -26,9 +26,7 @@ impl Debug for DRAM {
 }
 
 impl Device for DRAM {
-    fn get_address_space_size(&self) -> usize {
-        self.size
-    }
+    fn get_address_space_size(&self) -> usize { self.size }
 
     fn read_bytes(&self, address: usize, size: usize) -> Result<&[u8], DeviceError> {
         let end_address = address + size;
@@ -107,7 +105,5 @@ impl Device for DRAM {
         }
     }
 
-    fn as_any(&self) -> &dyn Any {
-        self
-    }
+    fn as_any(&self) -> &dyn Any { self }
 }
