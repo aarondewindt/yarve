@@ -1,6 +1,8 @@
 use crate::device::{Device, DeviceError};
 use crate::endianness::Endianness;
 use std::convert::TryInto;
+use std::fmt::{Debug, Formatter};
+use std::any::Any;
 
 
 pub struct DRAM {
@@ -15,8 +17,20 @@ impl DRAM {
             memory: vec![0; size + 7]
         }
     }
+}
 
-    pub fn read_bytes(&self, address: usize, size: usize) -> Result<&[u8], DeviceError> {
+impl Debug for DRAM {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "DRAM {{ size: {:?} }}", self.size)
+    }
+}
+
+impl Device for DRAM {
+    fn get_address_space_size(&self) -> usize {
+        self.size
+    }
+
+    fn read_bytes(&self, address: usize, size: usize) -> Result<&[u8], DeviceError> {
         let end_address = address + size;
 
         if end_address <= self.size {
@@ -26,7 +40,7 @@ impl DRAM {
         }
     }
 
-    pub fn write_bytes(&mut self, address: usize, binary: &[u8]) -> Result<(), DeviceError> {
+    fn write_bytes(&mut self, address: usize, binary: &[u8]) -> Result<(), DeviceError> {
         let end_address = address + binary.len();
 
         if end_address <= self.size {
@@ -39,15 +53,8 @@ impl DRAM {
             Err(DeviceError::InvalidAddress)
         }
     }
-}
 
-
-impl Device for DRAM {
-    fn get_address_space_size(&self) -> usize {
-        self.size
-    }
-
-    fn read(&self, address: usize, size: usize, endianness: Endianness) -> Result<u64, DeviceError> {
+    fn read_int(&self, address: usize, size: usize, endianness: Endianness) -> Result<u64, DeviceError> {
         if (address + size) <= self.size {
             match size {
                 1..=8 => {
@@ -79,8 +86,8 @@ impl Device for DRAM {
         }
     }
 
-    fn write(&mut self, address: usize, value: u64, size: usize, endianness: Endianness)
-        -> Result<(), DeviceError> {
+    fn write_int(&mut self, address: usize, value: u64, size: usize, endianness: Endianness)
+                 -> Result<(), DeviceError> {
         if (address + size) <= self.size {
             match size {
                 1..=8 => {
@@ -98,5 +105,9 @@ impl Device for DRAM {
         } else {
             Err(DeviceError::InvalidAddress)
         }
+    }
+
+    fn as_any(&self) -> &dyn Any {
+        self
     }
 }

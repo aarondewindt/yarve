@@ -49,7 +49,7 @@ mod test_dram {
                 value: u64,
                 expected: [u8; 16],
                 endianness: Endianness | {
-            match dram.write(address, value, 1, endianness) {
+            match dram.write_int(address, value, 1, endianness) {
                 Ok(()) => {},
                 Err(e) => {panic!("PANIC {:?}", e)}
             }
@@ -119,7 +119,7 @@ mod test_dram {
                 value: u64,
                 expected: [u8; 16],
                 endianness: Endianness | {
-            match dram.write(address, value, 2, endianness) {
+            match dram.write_int(address, value, 2, endianness) {
                 Ok(()) => {},
                 Err(e) => {panic!("PANIC {:?}", e)}
             }
@@ -165,7 +165,7 @@ mod test_dram {
             Endianness::BigEndian
         );
 
-        match dram.write(15, 19755, 2, Endianness::LittleEndian) {
+        match dram.write_int(15, 19755, 2, Endianness::LittleEndian) {
             Ok(()) => {panic!("PANIC")},
             Err(_) => {}
         }
@@ -181,7 +181,7 @@ mod test_dram {
                 value: u64,
                 expected: [u8; 16],
                 endianness: Endianness | {
-            match dram.write(address, value, 4, endianness) {
+            match dram.write_int(address, value, 4, endianness) {
                 Ok(()) => {},
                 Err(e) => { panic!("PANIC {:?}", e) }
             }
@@ -220,7 +220,7 @@ mod test_dram {
             Endianness::BigEndian
         );
 
-        match dram.write(13, 19755, 4, Endianness::LittleEndian) {
+        match dram.write_int(13, 19755, 4, Endianness::LittleEndian) {
             Ok(()) => {panic!("PANIC")},
             Err(_) => {}
         }
@@ -236,7 +236,7 @@ mod test_dram {
                 value: u64,
                 expected: [u8; 16],
                 endianness: Endianness | {
-            match dram.write(address, value, 8, endianness) {
+            match dram.write_int(address, value, 8, endianness) {
                 Ok(()) => {},
                 Err(e) => { panic!("PANIC {:?}", e) }
             }
@@ -279,7 +279,7 @@ mod test_dram {
             Endianness::BigEndian
         );
 
-        match dram.write(9, 0x54_32_4D_2B_7A_3D_E5_1F, 8, Endianness::LittleEndian) {
+        match dram.write_int(9, 0x54_32_4D_2B_7A_3D_E5_1F, 8, Endianness::LittleEndian) {
             Ok(()) => {panic!("PANIC")},
             Err(_) => {}
         }
@@ -298,32 +298,32 @@ mod test_dram {
             Err(e) => {panic!("PANIC {:?}", e)}
         }
 
-        match dram.read(2, 1, Endianness::LittleEndian) {
+        match dram.read_int(2, 1, Endianness::LittleEndian) {
             Ok(value) => assert_eq!(value, 0x12),
             Err(e) => {panic!("PANIC {:?}", e)}
         }
 
-        match dram.read(2, 1, Endianness::BigEndian) {
+        match dram.read_int(2, 1, Endianness::BigEndian) {
             Ok(value) => assert_eq!(value, 0x12),
             Err(e) => {panic!("PANIC {:?}", e)}
         }
 
-        match dram.read(15, 1, Endianness::LittleEndian) {
+        match dram.read_int(15, 1, Endianness::LittleEndian) {
             Ok(value) => assert_eq!(value, 0x1F),
             Err(e) => {panic!("PANIC {:?}", e)}
         }
 
-        match dram.read(15, 1, Endianness::BigEndian) {
+        match dram.read_int(15, 1, Endianness::BigEndian) {
             Ok(value) => assert_eq!(value, 0x1F),
             Err(e) => {panic!("PANIC {:?}", e)}
         }
 
-        match dram.read(0, 1, Endianness::LittleEndian) {
+        match dram.read_int(0, 1, Endianness::LittleEndian) {
             Ok(value) => assert_eq!(value, 0x10),
             Err(e) => {panic!("PANIC {:?}", e)}
         }
 
-        match dram.read(0, 1, Endianness::BigEndian) {
+        match dram.read_int(0, 1, Endianness::BigEndian) {
             Ok(value) => assert_eq!(value, 0x10),
             Err(e) => {panic!("PANIC {:?}", e)}
         }
@@ -342,37 +342,37 @@ mod test_dram {
             Err(e) => {panic!("PANIC {:?}", e)}
         }
 
-        match dram.read(2, 2, Endianness::LittleEndian) {
+        match dram.read_int(2, 2, Endianness::LittleEndian) {
             Ok(value) => assert_eq!(value, 0x13_12),
             Err(e) => {panic!("PANIC {:?}", e)}
         }
 
-        match dram.read(2, 2, Endianness::BigEndian) {
+        match dram.read_int(2, 2, Endianness::BigEndian) {
             Ok(value) => assert_eq!(value, 0x12_13),
             Err(e) => {panic!("PANIC {:?}", e)}
         }
 
-        match dram.read(14, 2, Endianness::LittleEndian) {
+        match dram.read_int(14, 2, Endianness::LittleEndian) {
             Ok(value) => assert_eq!(value, 0x1F_1E),
             Err(e) => {panic!("PANIC {:?}", e)}
         }
 
-        match dram.read(14, 2, Endianness::BigEndian) {
+        match dram.read_int(14, 2, Endianness::BigEndian) {
             Ok(value) => assert_eq!(value, 0x1E_1F),
             Err(e) => {panic!("PANIC {:?}", e)}
         }
 
-        match dram.read(0, 2, Endianness::LittleEndian) {
+        match dram.read_int(0, 2, Endianness::LittleEndian) {
             Ok(value) => assert_eq!(value, 0x11_10),
             Err(e) => {panic!("PANIC {:?}", e)}
         }
 
-        match dram.read(0, 2, Endianness::BigEndian) {
+        match dram.read_int(0, 2, Endianness::BigEndian) {
             Ok(value) => assert_eq!(value, 0x10_11),
             Err(e) => {panic!("PANIC {:?}", e)}
         }
 
-        match dram.read(15, 2, Endianness::BigEndian) {
+        match dram.read_int(15, 2, Endianness::BigEndian) {
             Ok(value) => {
                 println!("{:x}", value);
             },
@@ -393,12 +393,12 @@ mod test_dram {
             Err(e) => { panic!("PANIC {:?}", e) }
         }
 
-        match dram.read(2, 4, Endianness::LittleEndian) {
+        match dram.read_int(2, 4, Endianness::LittleEndian) {
             Ok(value) => assert_eq!(value, 0x15_14_13_12),
             Err(e) => { panic!("PANIC {:?}", e) }
         }
 
-        match dram.read(2, 4, Endianness::BigEndian) {
+        match dram.read_int(2, 4, Endianness::BigEndian) {
             Ok(value) => assert_eq!(value, 0x12_13_14_15),
             Err(e) => { panic!("PANIC {:?}", e) }
         }
@@ -417,32 +417,32 @@ mod test_dram {
             Err(e) => { panic!("PANIC {:?}", e) }
         }
 
-        match dram.read(2, 8, Endianness::LittleEndian) {
+        match dram.read_int(2, 8, Endianness::LittleEndian) {
             Ok(value) => assert_eq!(value, 0x19_18_17_16_15_14_13_12),
             Err(e) => { panic!("PANIC {:?}", e) }
         }
 
-        match dram.read(2, 8, Endianness::BigEndian) {
+        match dram.read_int(2, 8, Endianness::BigEndian) {
             Ok(value) => assert_eq!(value, 0x12_13_14_15_16_17_18_19),
             Err(e) => { panic!("PANIC {:?}", e) }
         }
 
-        match dram.read(2, 8, Endianness::LittleEndian) {
+        match dram.read_int(2, 8, Endianness::LittleEndian) {
             Ok(value) => assert_eq!(value, 0x19_18_17_16_15_14_13_12),
             Err(e) => { panic!("PANIC {:?}", e) }
         }
 
-        match dram.read(2, 8, Endianness::BigEndian) {
+        match dram.read_int(2, 8, Endianness::BigEndian) {
             Ok(value) => assert_eq!(value, 0x12_13_14_15_16_17_18_19),
             Err(e) => { panic!("PANIC {:?}", e) }
         }
 
-        match dram.read(8, 8, Endianness::LittleEndian) {
+        match dram.read_int(8, 8, Endianness::LittleEndian) {
             Ok(value) => assert_eq!(value, 0x1F_1E_1D_1C_1B_1A_19_18),
             Err(e) => { panic!("PANIC {:?}", e) }
         }
 
-        match dram.read(8, 8, Endianness::BigEndian) {
+        match dram.read_int(8, 8, Endianness::BigEndian) {
             Ok(value) => assert_eq!(value, 0x18_19_1A_1B_1C_1D_1E_1F),
             Err(e) => { panic!("PANIC {:?}", e) }
         }
