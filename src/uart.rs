@@ -40,7 +40,7 @@ impl Device for UART {
             Ok(&[0])
         }
         else {
-            Err(DeviceError::InvalidSize)
+            Err(DeviceError::InvalidSizeReadFault)
         }
     }
 
@@ -53,7 +53,7 @@ impl Device for UART {
             Ok(())
         }
         else {
-            Err(DeviceError::InvalidSize)
+            Err(DeviceError::InvalidSizeWriteFault)
         }
     }
 
@@ -65,7 +65,7 @@ impl Device for UART {
         if size == 1 {
             Ok(self.write_bytes(address, &[value as u8])?)
         } else {
-            Err(DeviceError::InvalidSize)
+            Err(DeviceError::InvalidSizeWriteFault)
         }
     }
 

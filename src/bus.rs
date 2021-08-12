@@ -35,26 +35,25 @@ impl Bus {
         bus
     }
 
-    pub fn get_device(&self, address: usize) -> Result<(&Range<usize>, &Box<dyn Device>),
-                                                       DeviceError> {
+    pub fn get_device(&self, address: usize) -> Option<(&Range<usize>, &Box<dyn Device>)> {
         let (address_range, device_idx) =
             match self.address_space_map.get_key_value(&address) {
                 Some(x) => x,
-                None => { return Err(DeviceError::InvalidAddress)}
+                None => { return None }
         };
-        Ok((address_range, &self.devices[*device_idx]))
+        Some((address_range, &self.devices[*device_idx]))
     }
 
-    pub fn get_device_mut(&mut self, address: usize) -> Result<(&Range<usize>, &mut Box<dyn Device>),
-        DeviceError> {
+    pub fn get_device_mut(&mut self, address: usize) -> Option<(&Range<usize>, &mut Box<dyn Device>)> {
         let (address_range, device_idx) =
             match self.address_space_map.get_key_value(&address) {
                 Some(x) => x,
-                None => { return Err(DeviceError::InvalidAddress)}
+                None => { return None }
             };
-        Ok((address_range, match self.devices.get_mut(*device_idx) {
+
+        Some((address_range, match self.devices.get_mut(*device_idx) {
             Some(x) => x,
-            None => { return Err(DeviceError::InvalidAddress) }
+            None => { return None }
         }))
     }
 }
@@ -63,27 +62,43 @@ impl Device for Bus {
     fn get_address_space_size(&self) -> usize{ self.address_space_size }
 
     fn read_bytes(&self, address: usize, size: usize) -> Result<&[u8], DeviceError> {
-        let (address_range, device) = self.get_device(address)?;
-        let address = address - address_range.start;
-        device.read_bytes(address, size)
+        match self.get_device(address) {
+            Some((address_range, device)) => {
+                let address = address - address_range.start;
+                device.read_bytes(address, size)
+            },
+            None => { Err(DeviceError::InvalidAddressReadFault) }
+        }
     }
 
     fn write_bytes(&mut self, address: usize, binary: &[u8]) -> Result<(), DeviceError> {
-        let (address_range, device) = self.get_device_mut(address)?;
-        let address = address - address_range.start;
-        device.write_bytes(address, binary)
+        match self.get_device_mut(address) {
+            Some((address_range, device)) => {
+                let address = address - address_range.start;
+                device.write_bytes(address, binary)
+            },
+            None => { Err(DeviceError::InvalidAddressWriteFault) }
+        }
     }
 
     fn read_int(&self, address: usize, size: usize, endianness: Endianness) -> Result<u64, DeviceError> {
-        let (address_range, device) = self.get_device(address)?;
-        let address = address - address_range.start;
-        device.read_int(address, size, endianness)
+        match self.get_device(address) {
+            Some((address_range, device)) => {
+                let address = address - address_range.start;
+                device.read_int(address, size, endianness)
+            },
+            None => { Err(DeviceError::InvalidAddressReadFault) }
+        }
     }
 
     fn write_int(&mut self, address: usize, value: u64, size: usize, endianness: Endianness) -> Result<(), DeviceError> {
-        let (address_range, device) = self.get_device_mut(address)?;
-        let address = address - address_range.start;
-        device.write_int(address, value, size, endianness)
+        match self.get_device_mut(address) {
+            Some((address_range, device)) => {
+                let address = address - address_range.start;
+                device.write_int(address, value, size, endianness)
+            },
+            None => { Err(DeviceError::InvalidAddressWriteFault) }
+        }
     }
 
     fn as_any(&self) -> &dyn Any { self }

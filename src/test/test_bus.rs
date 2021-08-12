@@ -36,13 +36,13 @@ mod test_bus {
         );
 
         match bus.get_device(21) {
-            Ok(_) => {panic!("PANIC")},
-            Err(_) => {}
+            Some(_) => {panic!("PANIC")},
+            None => {}
         }
 
         match bus.get_device(4) {
-            Ok(_) => {panic!("PANIC")},
-            Err(_) => {}
+            Some(_) => {panic!("PANIC")},
+            None => {}
         }
     }
 

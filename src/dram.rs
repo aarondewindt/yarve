@@ -34,7 +34,7 @@ impl Device for DRAM {
         if end_address <= self.size {
             Ok(&self.memory[address..(address+size)])
         } else {
-            Err(DeviceError::InvalidAddress)
+            Err(DeviceError::InvalidAddressReadFault)
         }
     }
 
@@ -48,7 +48,7 @@ impl Device for DRAM {
             Ok(())
 
         } else {
-            Err(DeviceError::InvalidAddress)
+            Err(DeviceError::InvalidAddressWriteFault)
         }
     }
 
@@ -77,10 +77,10 @@ impl Device for DRAM {
                     }
 
                 },
-                _ => Err(DeviceError::InvalidSize)
+                _ => Err(DeviceError::InvalidSizeReadFault)
             }
         } else {
-            Err(DeviceError::InvalidAddress)
+            Err(DeviceError::InvalidAddressReadFault)
         }
     }
 
@@ -98,10 +98,10 @@ impl Device for DRAM {
                         }
                     }
                 }
-                _ => Err(DeviceError::InvalidSize)
+                _ => Err(DeviceError::InvalidSizeWriteFault)
             }
         } else {
-            Err(DeviceError::InvalidAddress)
+            Err(DeviceError::InvalidAddressWriteFault)
         }
     }
 

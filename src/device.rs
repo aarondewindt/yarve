@@ -5,8 +5,10 @@ use std::any::Any;
 
 #[derive(Debug)]
 pub enum DeviceError {
-    InvalidAddress,
-    InvalidSize,
+    InvalidAddressWriteFault,
+    InvalidAddressReadFault,
+    InvalidSizeWriteFault,
+    InvalidSizeReadFault,
     InternalDeviceError(Box<dyn Error>),
 }
 
