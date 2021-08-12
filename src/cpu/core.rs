@@ -3,14 +3,13 @@ use std::rc::Rc;
 use std::cell::RefCell;
 use std::fmt::{Display, Formatter, Debug};
 
-use crate::cpu::register::{XRegisterMap, FRegisterMap};
 use crate::bus::Bus;
-
 use crate::endianness::Endianness;
 use crate::device::{DeviceError, Device};
 use crate::cpu::instruction::Instruction;
 use crate::cpu::decode::InstructionDecodeError;
 use crate::cpu::execute::InstructionExecuteError;
+use crate::cpu::register::{XRegisterMap, FRegisterMap};
 
 
 pub struct Core {
