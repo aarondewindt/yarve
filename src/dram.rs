@@ -11,7 +11,7 @@ pub struct DRAM {
 }
 
 impl DRAM {
-    pub fn new(size: usize) -> DRAM {
+    pub fn new(size: usize) -> Self {
         Self {
             size,
             memory: vec![0; size + 7]

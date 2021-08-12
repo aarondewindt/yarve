@@ -9,7 +9,7 @@ mod test_instruction_decoding_s {
     #[allow(overflowing_literals)]
     fn imm_sign_extension_1() {
         let raw_instruction: u32 = 0b_1110101_10111_11010_000_01110_0100011;
-        let instruction = Instruction::decode(raw_instruction);
+        let instruction = Instruction::decode(raw_instruction).unwrap();
         assert_eq!(instruction, Instruction::sb {
             rs1: XRegister::x26,
             rs2: XRegister::x23,
@@ -20,7 +20,7 @@ mod test_instruction_decoding_s {
     #[test]
     fn sb() {
         let raw_instruction: u32 = 0b_0110101_10111_11010_000_01110_0100011;
-        let instruction = Instruction::decode(raw_instruction);
+        let instruction = Instruction::decode(raw_instruction).unwrap();
         assert_eq!(instruction, Instruction::sb {
             rs1: XRegister::x26,
             rs2: XRegister::x23,
@@ -31,7 +31,7 @@ mod test_instruction_decoding_s {
     #[test]
     fn sh() {
         let raw_instruction: u32 = 0b_0010101_10111_11010_001_01110_0100011;
-        let instruction = Instruction::decode(raw_instruction);
+        let instruction = Instruction::decode(raw_instruction).unwrap();
         assert_eq!(instruction, Instruction::sh {
             rs1: XRegister::x26,
             rs2: XRegister::x23,
@@ -42,7 +42,7 @@ mod test_instruction_decoding_s {
     #[test]
     fn sw() {
         let raw_instruction: u32 = 0b_0110101_10111_11010_010_01110_0100011;
-        let instruction = Instruction::decode(raw_instruction);
+        let instruction = Instruction::decode(raw_instruction).unwrap();
         assert_eq!(instruction, Instruction::sw {
             rs1: XRegister::x26,
             rs2: XRegister::x23,

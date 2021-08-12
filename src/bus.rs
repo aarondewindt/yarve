@@ -13,7 +13,7 @@ pub struct Bus {
 }
 
 impl Bus {
-    pub fn new(devices: Vec<(usize, Box<dyn Device>)>) -> Bus {
+    pub fn new(devices: Vec<(usize, Box<dyn Device>)>) -> Self {
         let mut bus = Self {
             address_space_size: 0,
             address_space_map: RangeMap::new(),

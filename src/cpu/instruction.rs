@@ -70,8 +70,6 @@ pub enum InstructionFormat {
 #[derive(Debug, PartialEq, Clone)]
 #[allow(non_camel_case_types)]
 pub enum Instruction {
-    Undefined {instruction: u32, msg: String},
-
     // RV32I Base Instruction Set
     // R: 0110011
     add {rd: XRegister, rs1: XRegister, rs2: XRegister},
