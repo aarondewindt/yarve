@@ -13,7 +13,7 @@ mod test_instruction_decoding_i {
         assert_eq!(instruction, Instruction::jalr {
             rd: XRegister::x14,
             rs1: XRegister::x26,
-            imm: 0b1111111111111111111111111111111111111111111111111111_1_11010110111 as isize,
+            imm: 0b1111111111111111111111111111111111111111111111111111_1_11010110111,
         });
     }
 

@@ -68,15 +68,15 @@ impl InstructionFormat {
                         }
                     },
 
-                    (0b0000011, 0b000) => Ok(Instruction::lb{rd, rs1, imm: imm as isize}),
-                    (0b0000011, 0b001) => Ok(Instruction::lh{rd, rs1, imm: imm as isize}),
-                    (0b0000011, 0b010) => Ok(Instruction::lw{rd, rs1, imm: imm as isize}),
-                    (0b0000011, 0b100) => Ok(Instruction::lbu{rd, rs1, imm: imm as isize}),
-                    (0b0000011, 0b101) => Ok(Instruction::lhu{rd, rs1, imm: imm as isize}),
-                    (0b0000011, 0b110) => Ok(Instruction::lwu{rd, rs1, imm: imm as isize}),
-                    (0b0000011, 0b011) => Ok(Instruction::ld{rd, rs1, imm: imm as isize}),
+                    (0b0000011, 0b000) => Ok(Instruction::lb{rd, rs1, imm}),
+                    (0b0000011, 0b001) => Ok(Instruction::lh{rd, rs1, imm}),
+                    (0b0000011, 0b010) => Ok(Instruction::lw{rd, rs1, imm}),
+                    (0b0000011, 0b100) => Ok(Instruction::lbu{rd, rs1, imm}),
+                    (0b0000011, 0b101) => Ok(Instruction::lhu{rd, rs1, imm}),
+                    (0b0000011, 0b110) => Ok(Instruction::lwu{rd, rs1, imm}),
+                    (0b0000011, 0b011) => Ok(Instruction::ld{rd, rs1, imm}),
 
-                    (0b1100111, 0b000) => Ok(Instruction::jalr{rd, rs1, imm: imm as isize}),
+                    (0b1100111, 0b000) => Ok(Instruction::jalr{rd, rs1, imm}),
 
                     (0b1110011, 0b000) => {
                         match imm {
@@ -342,7 +342,7 @@ impl InstructionFormat {
                     (imm1912 << 12) | (imm11 << 11) | (imm101 << 1)) as i64;
 
                 match opcode {
-                    1101111 => Ok(Instruction::jal{rd, imm: imm as isize}),
+                    1101111 => Ok(Instruction::jal{rd, imm}),
                     _ => Err(InstructionDecodeError::UnknownJInstruction{ opcode, imm })
                 }
             }
@@ -357,10 +357,10 @@ impl InstructionFormat {
                     | (imm115 << 5) | imm40) as i64;
 
                 match (opcode, funct3) {
-                        (0b0100011, 0b000) => Ok(Instruction::sb{rs1, rs2, imm: imm as isize}),
-                        (0b0100011, 0b001) => Ok(Instruction::sh{rs1, rs2, imm: imm as isize}),
-                        (0b0100011, 0b010) => Ok(Instruction::sw{rs1, rs2, imm: imm as isize}),
-                        (0b0100011, 0b011) => Ok(Instruction::sd{rs1, rs2, imm: imm as isize}),
+                        (0b0100011, 0b000) => Ok(Instruction::sb{rs1, rs2, imm}),
+                        (0b0100011, 0b001) => Ok(Instruction::sh{rs1, rs2, imm}),
+                        (0b0100011, 0b010) => Ok(Instruction::sw{rs1, rs2, imm}),
+                        (0b0100011, 0b011) => Ok(Instruction::sd{rs1, rs2, imm}),
 
                     _ => Err(InstructionDecodeError::UnknownSInstruction{
                         opcode, rs1, rs2, funct3, imm
@@ -381,12 +381,12 @@ impl InstructionFormat {
                     (imm11 << 11) | (imm105 << 5) | (imm41 << 1)) as i64;
 
                 match (opcode, funct3) {
-                    (0b1100011, 0b000) => Ok(Instruction::beq{rs1, rs2, imm: imm as isize}),
-                    (0b1100011, 0b001) => Ok(Instruction::bne{rs1, rs2, imm: imm as isize}),
-                    (0b1100011, 0b100) => Ok(Instruction::blt{rs1, rs2, imm: imm as isize}),
-                    (0b1100011, 0b101) => Ok(Instruction::bge{rs1, rs2, imm: imm as isize}),
-                    (0b1100011, 0b110) => Ok(Instruction::bltu{rs1, rs2, imm: imm as isize}),
-                    (0b1100011, 0b111) => Ok(Instruction::bgeu{rs1, rs2, imm: imm as isize}),
+                    (0b1100011, 0b000) => Ok(Instruction::beq{rs1, rs2, imm}),
+                    (0b1100011, 0b001) => Ok(Instruction::bne{rs1, rs2, imm}),
+                    (0b1100011, 0b100) => Ok(Instruction::blt{rs1, rs2, imm}),
+                    (0b1100011, 0b101) => Ok(Instruction::bge{rs1, rs2, imm}),
+                    (0b1100011, 0b110) => Ok(Instruction::bltu{rs1, rs2, imm}),
+                    (0b1100011, 0b111) => Ok(Instruction::bgeu{rs1, rs2, imm}),
                     _ => Err(InstructionDecodeError::UnknownBInstruction{
                         opcode, rs1, rs2, funct3, imm
                     })

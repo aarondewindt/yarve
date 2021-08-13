@@ -118,7 +118,7 @@ impl Instruction {
             },
 
             Instruction::lb {rd, rs1, imm} => {
-                let address = core.x_registers[*rs1] as usize + *imm as usize;
+                let address = (core.x_registers[*rs1] as i64).wrapping_add(*imm) as usize;
                 core.x_registers[*rd] = core.bus.borrow()
                     .read_int(address, 1, Endianness::LittleEndian)?
             }

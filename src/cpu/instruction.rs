@@ -95,27 +95,27 @@ pub enum Instruction {
     sltiu {rd: XRegister, rs1: XRegister, imm: u64},
 
     // I: 0000011
-    lb {rd: XRegister, rs1: XRegister, imm: isize},
-    lh {rd: XRegister, rs1: XRegister, imm: isize},
-    lw {rd: XRegister, rs1: XRegister, imm: isize},
-    lbu {rd: XRegister, rs1: XRegister, imm: isize},
-    lhu {rd: XRegister, rs1: XRegister, imm: isize},
+    lb {rd: XRegister, rs1: XRegister, imm: i64},
+    lh {rd: XRegister, rs1: XRegister, imm: i64},
+    lw {rd: XRegister, rs1: XRegister, imm: i64},
+    lbu {rd: XRegister, rs1: XRegister, imm: i64},
+    lhu {rd: XRegister, rs1: XRegister, imm: i64},
 
     // S: 0100011
-    sb {rs1: XRegister, rs2: XRegister, imm: isize},
-    sh {rs1: XRegister, rs2: XRegister, imm: isize},
-    sw {rs1: XRegister, rs2: XRegister, imm: isize},
+    sb {rs1: XRegister, rs2: XRegister, imm: i64},
+    sh {rs1: XRegister, rs2: XRegister, imm: i64},
+    sw {rs1: XRegister, rs2: XRegister, imm: i64},
 
     // B: 1100011
-    beq {rs1: XRegister, rs2: XRegister, imm: isize},
-    bne {rs1: XRegister, rs2: XRegister, imm: isize},
-    blt {rs1: XRegister, rs2: XRegister, imm: isize},
-    bge {rs1: XRegister, rs2: XRegister, imm: isize},
-    bltu {rs1: XRegister, rs2: XRegister, imm: isize},
-    bgeu {rs1: XRegister, rs2: XRegister, imm: isize},
+    beq {rs1: XRegister, rs2: XRegister, imm: i64},
+    bne {rs1: XRegister, rs2: XRegister, imm: i64},
+    blt {rs1: XRegister, rs2: XRegister, imm: i64},
+    bge {rs1: XRegister, rs2: XRegister, imm: i64},
+    bltu {rs1: XRegister, rs2: XRegister, imm: i64},
+    bgeu {rs1: XRegister, rs2: XRegister, imm: i64},
 
-    jal {rd: XRegister, imm: isize},  // J: 1101111
-    jalr {rd: XRegister, rs1: XRegister, imm: isize},  // I: 1100111
+    jal {rd: XRegister, imm: i64},  // J: 1101111
+    jalr {rd: XRegister, rs1: XRegister, imm: i64},  // I: 1100111
 
     lui {rd: XRegister, uimm: u64},  // U: 0110111
     auipc {rd: XRegister, uimm: u64},  // U: 0010111
@@ -131,11 +131,11 @@ pub enum Instruction {
 
     // RV64I Base Instruction Set
     // I: 0000011
-    lwu {rd: XRegister, rs1: XRegister, imm: isize},
-    ld {rd: XRegister, rs1: XRegister, imm: isize},
+    lwu {rd: XRegister, rs1: XRegister, imm: i64},
+    ld {rd: XRegister, rs1: XRegister, imm: i64},
 
     // R: 0100011
-    sd {rs1: XRegister, rs2: XRegister, imm: isize},
+    sd {rs1: XRegister, rs2: XRegister, imm: i64},
 
     // I: 0011011
     addiw {rd: XRegister, rs1: XRegister, imm: i64},
