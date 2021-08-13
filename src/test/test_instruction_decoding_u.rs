@@ -49,7 +49,7 @@ mod test_instruction_decoding_u {
         let instruction = Instruction::decode(raw_instruction).unwrap();
         assert_eq!(instruction, Instruction::auipc {
             rd: XRegister::x14,
-            uimm: 0b01101011011111010000_000000000000,
+            imm: 0b01101011011111010000_000000000000,
         });
     }
 }

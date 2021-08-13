@@ -134,9 +134,11 @@ impl InstructionFormat {
                     0xFFFFFFFF00000000u64 * (instruction as u64 >> 31) |
                         (instruction & 0xFFFFF800u32) as u64;
 
+
+
                 match opcode {
                     0b0110111 => Ok(Instruction::lui{rd, uimm}),
-                    0b0010111 => Ok(Instruction::auipc{rd, uimm}),
+                    0b0010111 => Ok(Instruction::auipc{rd, imm: uimm as i64}),
                     _ => Err(InstructionDecodeError::UnknownUInstruction {opcode, rd, uimm})
                 }
             },

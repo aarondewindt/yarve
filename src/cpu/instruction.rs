@@ -67,7 +67,7 @@ pub enum InstructionFormat {
     J
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Copy)]
 #[allow(non_camel_case_types)]
 pub enum Instruction {
     // RV32I Base Instruction Set
@@ -118,7 +118,7 @@ pub enum Instruction {
     jalr {rd: XRegister, rs1: XRegister, imm: i64},  // I: 1100111
 
     lui {rd: XRegister, uimm: u64},  // U: 0110111
-    auipc {rd: XRegister, uimm: u64},  // U: 0010111
+    auipc {rd: XRegister, imm: i64},  // U: 0010111
 
     // I: 1110011
     ecall,

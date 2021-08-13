@@ -49,6 +49,11 @@ impl Core {
         instruction.execute(self)?;
         Ok(())
     }
+
+    pub fn add_to_pc(&mut self, delta: i64) {
+        self.pc = self.pc.wrapping_add(delta as usize);
+    }
+
 }
 
 impl Display for CoreError {
