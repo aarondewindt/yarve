@@ -1,5 +1,6 @@
 use crate::device::{Device, DeviceError};
 use crate::endianness::Endianness;
+use crate::utilities::extend_sign;
 use std::convert::TryInto;
 use std::fmt::{Debug, Formatter};
 use std::any::Any;
@@ -52,7 +53,8 @@ impl Device for DRAM {
         }
     }
 
-    fn read_int(&self, address: usize, size: usize, endianness: Endianness) -> Result<u64, DeviceError> {
+    fn read_int(&self, address: usize, size: usize, endianness: Endianness, sign_extend: bool)
+            -> Result<u64, DeviceError> {
         if (address + size) <= self.size {
             match size {
                 1..=8 => {
@@ -65,17 +67,22 @@ impl Device for DRAM {
                         }
                     };
 
-                    match endianness {
+                    let mut value = match endianness {
                         Endianness::LittleEndian => {
                             let mask = u64::MAX >> ((8 - size) * 8);
-                            Ok(u64::from_le_bytes(bytes) & mask)
+                            u64::from_le_bytes(bytes) & mask
                         },
                         Endianness::BigEndian => {
                             let mask = u64::MAX << ((8 - size) * 8);
-                            Ok((u64::from_be_bytes(bytes) & mask) >> ((8 - size) * 8))
+                            (u64::from_be_bytes(bytes) & mask) >> ((8 - size) * 8)
                         }
+                    };
+
+                    if sign_extend {
+                        value = extend_sign(value, size * 8);
                     }
 
+                    Ok(value)
                 },
                 _ => Err(DeviceError::InvalidSizeReadFault)
             }

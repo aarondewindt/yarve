@@ -13,7 +13,7 @@ mod test_rv32i {
     use crate::device::Device;
     use std::rc::Rc;
     use std::cell::RefCell;
-    use crate::endianness::Endianness;
+
 
     fn new_test_core() -> Core {
         let dram = DRAM::new(16);
@@ -49,7 +49,7 @@ mod test_rv32i {
 
         core.bus.borrow_mut().write_bytes(0, &[
             0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17,
-            0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F]);
+            0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F]).unwrap();
 
         Instruction::lb {
             rd: XRegister::x1,

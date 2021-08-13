@@ -81,11 +81,12 @@ impl Device for Bus {
         }
     }
 
-    fn read_int(&self, address: usize, size: usize, endianness: Endianness) -> Result<u64, DeviceError> {
+    fn read_int(&self, address: usize, size: usize, endianness: Endianness, sign_extend: bool)
+            -> Result<u64, DeviceError> {
         match self.get_device(address) {
             Some((address_range, device)) => {
                 let address = address - address_range.start;
-                device.read_int(address, size, endianness)
+                device.read_int(address, size, endianness, sign_extend)
             },
             None => { Err(DeviceError::InvalidAddressReadFault) }
         }

@@ -41,7 +41,8 @@ impl Core {
             self.bus.borrow().read_int(
             self.pc,
             4,
-            Endianness::LittleEndian
+            Endianness::LittleEndian,
+                false
         )? as u32)?;
 
         self.pc += 4;

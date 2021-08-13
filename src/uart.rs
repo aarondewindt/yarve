@@ -21,7 +21,7 @@ pub struct UART {
 }
 
 impl UART {
-    fn new() -> Self {
+    fn _new() -> Self {
         Self { }
     }
 }
@@ -57,7 +57,8 @@ impl Device for UART {
         }
     }
 
-    fn read_int(&self, address: usize, size: usize, _endianness: Endianness) -> Result<u64, DeviceError> {
+    fn read_int(&self, address: usize, size: usize, _endianness: Endianness, _sign_extend: bool)
+            -> Result<u64, DeviceError> {
         Ok(self.read_bytes(address, size)?[0] as u64)
     }
 

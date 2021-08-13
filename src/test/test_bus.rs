@@ -25,13 +25,13 @@ mod test_bus {
 
         let (address_range, device) = bus.get_device(5).unwrap();
         assert_eq!(*address_range, 5..21);
-        assert_eq!(device.read_int(0, 8, Endianness::LittleEndian).unwrap(),
+        assert_eq!(device.read_int(0, 8, Endianness::LittleEndian, false).unwrap(),
                    0x17_16_15_14_13_12_11_10
         );
 
         let (address_range, device) = bus.get_device(20).unwrap();
         assert_eq!(*address_range, 5..21);
-        assert_eq!(device.read_int(15, 1, Endianness::LittleEndian).unwrap(),
+        assert_eq!(device.read_int(15, 1, Endianness::LittleEndian, false).unwrap(),
                    0x1F
         );
 
@@ -140,10 +140,10 @@ mod test_bus {
             vec![(5, Box::new(dram))]
         );
 
-        assert_eq!(0x11, bus.read_int(6, 1, Endianness::LittleEndian).unwrap());
-        assert_eq!(0x14_13_12_11, bus.read_int(6, 4, Endianness::LittleEndian).unwrap());
-        assert_eq!(0x11, bus.read_int(6, 1, Endianness::BigEndian).unwrap());
-        assert_eq!(0x11_12_13_14, bus.read_int(6, 4, Endianness::BigEndian).unwrap());
+        assert_eq!(0x11, bus.read_int(6, 1, Endianness::LittleEndian, false).unwrap());
+        assert_eq!(0x14_13_12_11, bus.read_int(6, 4, Endianness::LittleEndian, false).unwrap());
+        assert_eq!(0x11, bus.read_int(6, 1, Endianness::BigEndian, false).unwrap());
+        assert_eq!(0x11_12_13_14, bus.read_int(6, 4, Endianness::BigEndian, false).unwrap());
     }
 
     #[test]

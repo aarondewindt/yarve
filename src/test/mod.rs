@@ -7,3 +7,4 @@ mod test_exec_rv32i;
 mod test_core;
 mod test_dram;
 mod test_bus;
+mod test_utilities;
