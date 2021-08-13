@@ -45,7 +45,6 @@ impl Core {
                 false
         )? as u32)?;
 
-        self.pc += 4;
         instruction.execute(self)?;
         Ok(())
     }

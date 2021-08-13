@@ -86,23 +86,23 @@ mod test_rv64i {
         Instruction::beq {
             rs1: XRegister::x1,
             rs2: XRegister::x2,
-            imm: 4,
+            imm: 8,
         }.execute(&mut core).unwrap();
-        assert_eq!(core.pc, 4);
+        assert_eq!(core.pc, 8);
 
         Instruction::beq {
             rs1: XRegister::x1,
             rs2: XRegister::x2,
             imm: -1,
         }.execute(&mut core).unwrap();
-        assert_eq!(core.pc, 3);
+        assert_eq!(core.pc, 7);
 
         Instruction::beq {
             rs1: XRegister::x1,
             rs2: XRegister::x3,
             imm: -1,
         }.execute(&mut core).unwrap();
-        assert_eq!(core.pc, 3);
+        assert_eq!(core.pc, 11);
 
     }
 
@@ -118,47 +118,47 @@ mod test_rv64i {
         Instruction::blt {
             rs1: XRegister::x1,
             rs2: XRegister::x2,
-            imm: 4,
-        }.execute(&mut core).unwrap();
-        assert_eq!(core.pc, 4);
-
-        Instruction::blt {
-            rs1: XRegister::x4,
-            rs2: XRegister::x3,
-            imm: 4,
+            imm: 8,
         }.execute(&mut core).unwrap();
         assert_eq!(core.pc, 8);
 
         Instruction::blt {
+            rs1: XRegister::x4,
+            rs2: XRegister::x3,
+            imm: 8,
+        }.execute(&mut core).unwrap();
+        assert_eq!(core.pc, 16);
+
+        Instruction::blt {
             rs1: XRegister::x3,
             rs2: XRegister::x2,
-            imm: 4,
+            imm: 8,
         }.execute(&mut core).unwrap();
-        assert_eq!(core.pc, 12);
+        assert_eq!(core.pc, 24);
 
 
         Instruction::bltu {
             rs1: XRegister::x1,
             rs2: XRegister::x2,
-            imm: 4,
+            imm: 8,
         }.execute(&mut core).unwrap();
-        assert_eq!(core.pc, 16);
+        assert_eq!(core.pc, 32);
 
         Instruction::bltu {
             rs1: XRegister::x4,
             rs2: XRegister::x3,
-            imm: 4,
+            imm: 8,
         }.execute(&mut core).unwrap();
-        assert_eq!(core.pc, 20);
+        assert_eq!(core.pc, 40);
 
         // No branching here since negative two-compliment
         // values are high when casted to unsigned values.
         Instruction::bltu {
             rs1: XRegister::x3,
             rs2: XRegister::x2,
-            imm: 4,
+            imm: 8,
         }.execute(&mut core).unwrap();
-        assert_eq!(core.pc, 20);
+        assert_eq!(core.pc, 44);
     }
 
 

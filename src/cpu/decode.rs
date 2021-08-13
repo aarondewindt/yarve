@@ -7,7 +7,7 @@ use crate::cpu::register::{XRegister, FRegister};
 
 #[derive(Debug)]
 pub enum InstructionDecodeError {
-    NoInstructionFormatForOpcode { instruction: u32 },
+    NoInstructionFormatForOpcode { opcode: usize,  instruction: u32 },
     UnknownIInstruction { opcode: usize, rd: XRegister, rs1: XRegister, imm: i64},
     UnknownUInstruction { opcode: usize, rd: XRegister, uimm: u64},
     UnknownRInstruction {
@@ -29,7 +29,7 @@ impl Instruction {
         let opcode = (instruction & 0x7F) as usize;
         match &INSTRUCTION_FORMAT_TABLE[opcode] {
             Some(format) => format.decode(instruction),
-            None => Err(InstructionDecodeError::NoInstructionFormatForOpcode {instruction})
+            None => Err(InstructionDecodeError::NoInstructionFormatForOpcode {opcode, instruction})
         }
     }
 }
