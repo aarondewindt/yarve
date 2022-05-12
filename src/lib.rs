@@ -17,3 +17,4 @@ mod test;
 mod endianness;
 mod uart;
 mod utilities;
+mod bits;

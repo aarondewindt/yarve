@@ -3,6 +3,7 @@ use std::error::Error;
 
 use crate::cpu::instruction::{Instruction, RoundingMode, FloatFormat, InstructionFormat};
 use crate::cpu::register::{XRegister, FRegister};
+use crate::{bit_concat, bit_slice, sized_bit_extend, sized_bit_slice, bit_extend};
 
 
 #[derive(Debug)]
@@ -40,14 +41,15 @@ impl InstructionFormat {
         let opcode: usize = (instruction & 0x7F) as usize;
         match self {
             InstructionFormat::I => {
-                let rd_u32 = (instruction >> 7) & 0b11111;
+                let rd_u32 = bit_slice!(instruction, 11, 7);
                 let rd = XRegister::from(rd_u32);
-                let func3 = (instruction >> 12) & 0b111;
-                let uimm = ((instruction >> 15) & 0b11111) as u64;
+                let func3 = bit_slice!(instruction, 14, 12);
+                let uimm = bit_slice!(instruction, 19, 15) as u64;
                 let rs1 = XRegister::from(uimm as u32);
-                let imm =
-                    (0xFFFFFFFFFFFFF000u64 * (instruction as u64 >> 31)
-                        | (instruction as u64 >> 20)) as i64;
+                let imm = bit_concat!(
+                    sized_bit_extend!(bit_slice!(instruction, 31) as u64, 52u64),
+                    sized_bit_slice!(instruction as u64, 31, 20)
+                ) as i64;
 
                 match (opcode, func3) {
                     (0b0010011, 0b000) => Ok(Instruction::addi{rd, rs1, imm}),
@@ -129,12 +131,12 @@ impl InstructionFormat {
             },
 
             InstructionFormat::U => {
-                let rd = XRegister::from((instruction >> 7) & 0b11111);
-                let uimm =
-                    0xFFFFFFFF00000000u64 * (instruction as u64 >> 31) |
-                        (instruction & 0xFFFFF800u32) as u64;
-
-
+                let rd =  XRegister::from(bit_slice!(instruction, 11, 7));
+                let uimm = bit_concat!(
+                    sized_bit_extend!(bit_slice!(instruction, 31) as u64, 32),
+                    sized_bit_slice!(instruction as u64, 31 , 12),
+                    (0b0u64, 12)
+                );
 
                 match opcode {
                     0b0110111 => Ok(Instruction::lui{rd, uimm}),
@@ -144,14 +146,14 @@ impl InstructionFormat {
             },
 
             InstructionFormat::R => {
-                let ird = (instruction >> 7) & 0b11111;
+                let ird = bit_slice!(instruction, 11, 7);
                 let rd = XRegister::from(ird);
-                let funct3 = (instruction >> 12) & 0b111;
-                let irs1 = (instruction >> 15) & 0b11111;
-                let irs2 = (instruction >> 20) & 0b11111;
+                let funct3 = bit_slice!(instruction, 14, 12);
+                let irs1 = bit_slice!(instruction, 19, 15);
+                let irs2 = bit_slice!(instruction, 24, 20);
                 let rs1 = XRegister::from(irs1);
                 let rs2 = XRegister::from(irs2);
-                let funct7 = instruction >> 25;
+                let funct7 = bit_slice!(instruction, 31, 25);
 
                 match opcode {
                     0b0110011 => match (funct3, funct7) {
@@ -334,14 +336,13 @@ impl InstructionFormat {
             },
 
             InstructionFormat::J => {
-                let rd = XRegister::from((instruction >> 7) & 0b11111);
-                let imm1912 = ((instruction >> 12) & 0b11111111) as u64;
-                let imm11 = ((instruction >> 20) & 0b1) as u64;
-                let imm101 = ((instruction >> 21) & 0b1111111111) as u64;
-                let imm20 = (instruction >> 31) as u64;
-
-                let imm = (0xFFFFFFFFFFF00000 * imm20 |
-                    (imm1912 << 12) | (imm11 << 11) | (imm101 << 1)) as i64;
+                let rd = XRegister::from(bit_slice!(instruction, 11, 7));
+                let imm = bit_concat!(
+                    sized_bit_extend!(bit_slice!(instruction, 31) as u64, 64),
+                    sized_bit_slice!(instruction as u64, 18, 10),
+                    sized_bit_slice!(instruction as u64, 19),
+                    sized_bit_slice!(instruction as u64, 30, 20)
+                ) as i64;
 
                 match opcode {
                     1101111 => Ok(Instruction::jal{rd, imm}),
@@ -350,13 +351,15 @@ impl InstructionFormat {
             }
 
             InstructionFormat::S => {
-                let imm40 = ((instruction >> 7) & 0b11111) as u64;
-                let funct3 = (instruction >> 12) & 0b111;
-                let rs1 = XRegister::from((instruction >> 15) & 0b11111);
-                let rs2 = XRegister::from((instruction >> 20) & 0b11111);
-                let imm115 = (instruction >> 25) as u64;
-                let imm = (0xFFFFFFFFFFFFF000 * (instruction as u64 >> 31)
-                    | (imm115 << 5) | imm40) as i64;
+
+                let funct3 = bit_slice!(instruction, 14, 12);
+                let rs1 = XRegister::from(bit_slice!(instruction, 19, 15));
+                let rs2 = XRegister::from(bit_slice!(instruction, 24, 20));
+                let imm = bit_concat!(
+                    sized_bit_extend!(bit_slice!(instruction, 31) as u64, 52),
+                    sized_bit_slice!(instruction as u64, 31, 25),
+                    sized_bit_slice!(instruction as u64, 11, 7)
+                ) as i64;
 
                 match (opcode, funct3) {
                         (0b0100011, 0b000) => Ok(Instruction::sb{rs1, rs2, imm}),
@@ -371,16 +374,16 @@ impl InstructionFormat {
             }
 
             InstructionFormat::B => {
-                let imm11 = ((instruction >> 7) & 0b1) as u64;
-                let imm41 = ((instruction >> 8) & 0b1111) as u64;
-                let funct3 = (instruction >> 12) & 0b111;
-                let rs1 = XRegister::from((instruction >> 15) & 0b11111);
-                let rs2 = XRegister::from((instruction >> 20) & 0b11111);
-                let imm105 = ((instruction >> 25) & 0b111111) as u64;
-                let imm12 = (instruction >> 31) as u64;
-
-                let imm = (0xFFFFFFFFFFFFF000 * imm12 |
-                    (imm11 << 11) | (imm105 << 5) | (imm41 << 1)) as i64;
+                let funct3 = bit_slice!(instruction, 14, 12);
+                let rs1 = XRegister::from(bit_slice!(instruction, 19, 15));
+                let rs2 = XRegister::from(bit_slice!(instruction, 24, 20));
+                let imm = bit_concat!(
+                    sized_bit_extend!(bit_slice!(instruction, 31) as u64, 53),
+                    sized_bit_slice!(instruction as u64, 7),
+                    sized_bit_slice!(instruction as u64, 30, 25),
+                    sized_bit_slice!(instruction as u64, 11, 8),
+                    (0, 1)
+                ) as i64;
 
                 match (opcode, funct3) {
                     (0b1100011, 0b000) => Ok(Instruction::beq{rs1, rs2, imm}),
